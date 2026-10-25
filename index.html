@@ -13,19 +13,20 @@
                 extend: {
                     colors: {
                         cream: {
-                            50: '#FDFBF7',
-                            100: '#F7F3E9',
-                            200: '#EFE9D7',
-                            300: '#E2D7BC',
+                            50: '#FAF7F2',
+                            100: '#F2EFE9',
+                            200: '#E6E0D4',
+                            300: '#D5C9B5',
                         },
                         mocha: {
-                            500: '#5C4A42',
-                            700: '#3E3636',
-                            900: '#262121',
+                            500: '#6D5950',
+                            700: '#3E2723',
+                            900: '#261715',
                         },
                         accent: {
+                            terracotta: '#C67D5A',
+                            amber: '#B85B35',
                             gold: '#C5A059',
-                            amber: '#D97706',
                             emerald: '#059669'
                         }
                     },
@@ -61,8 +62,8 @@
 
     <style>
         body {
-            background-color: #FDFBF7;
-            color: #3E3636;
+            background-color: #FAF7F2;
+            color: #3E2723;
             font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
         }
         .custom-scrollbar::-webkit-scrollbar {
@@ -70,7 +71,7 @@
             height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #F7F3E9;
+            background: #F2EFE9;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #C5A059;
@@ -78,38 +79,43 @@
         }
         .leaflet-container {
             border-radius: 1rem;
-            box-shadow: 0 4px 20px -2px rgba(62, 54, 54, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(62, 39, 35, 0.08);
             z-index: 10;
         }
         .cream-card {
             background-color: #FFFFFF;
-            border: 1px solid #EFE9D7;
-            box-shadow: 0 4px 15px rgba(62, 54, 54, 0.03);
+            border: 1px solid #E6E0D4;
+            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.03);
             border-radius: 1rem;
+        }
+        .tab-btn.active {
+            background-color: #3E2723;
+            color: #FAF7F2;
+            border-color: #3E2723;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col custom-scrollbar">
+<body class="min-h-screen flex flex-col custom-scrollbar overflow-x-hidden">
 
     <!-- Auth Overlay Modal -->
     <div id="authModal" class="fixed inset-0 bg-mocha-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="cream-card max-w-md w-full p-8 shadow-2xl relative border-accent-gold/30 border-2">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-3 text-accent-gold text-2xl border border-cream-200 shadow-inner">
+                <div class="w-16 h-16 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-3 text-accent-amber text-2xl border border-cream-200 shadow-inner">
                     <i class="fa-solid fa-compass"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-mocha-700">台灣旅行地圖導覽</h2>
-                <p class="text-sm text-mocha-500 mt-1">請登入帳號以同步您的專屬行程</p>
+                <p class="text-sm text-mocha-500 mt-1">請登入帳號以同步您的專屬行程與足跡</p>
             </div>
 
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-mocha-700 uppercase tracking-wider mb-1">電子郵件 Email</label>
-                    <input type="email" id="authEmail" required placeholder="name@company.com" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-gold bg-cream-50/50 text-mocha-700">
+                    <input type="email" id="authEmail" required placeholder="name@company.com" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50/50 text-mocha-700">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-mocha-700 uppercase tracking-wider mb-1">密碼 Password</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-gold bg-cream-50/50 text-mocha-700">
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50/50 text-mocha-700">
                 </div>
 
                 <div id="authError" class="text-red-500 text-xs text-center hidden"></div>
@@ -127,14 +133,14 @@
     </div>
 
     <!-- Navigation Header -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-cream-200 px-4 lg:px-8 py-3 flex items-center justify-between shadow-sm">
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-cream-200 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
         <div class="flex items-center gap-3">
-            <div class="bg-accent-gold text-white p-2 rounded-lg shadow-sm">
-                <i class="fa-solid fa-map-location-dot text-lg"></i>
+            <div class="bg-accent-amber text-white p-2.5 rounded-xl shadow-sm">
+                <i class="fa-solid fa-map-location-dot text-xl"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg text-mocha-700 leading-none">TaiwanTravel Navigator</h1>
-                <span class="text-xs text-mocha-500">奶油白企業版 · 台灣行程規劃系統</span>
+                <h1 class="font-bold text-lg text-mocha-700 leading-none">Taiwan Travel Navigator</h1>
+                <span class="text-xs text-mocha-500">奶油白企業版 · 台灣全島行程規劃與美食導覽系統</span>
             </div>
         </div>
 
@@ -148,66 +154,78 @@
             <!-- Last Saved Time -->
             <div class="hidden md:flex items-center gap-1.5 text-mocha-500 bg-cream-50 border border-cream-200 px-3 py-1.5 rounded-full">
                 <i class="fa-regular fa-clock text-accent-gold"></i>
-                <span>上次儲存: <strong id="lastSavedTime" class="font-semibold text-mocha-700">未儲存</strong></span>
+                <span>上次同步: <strong id="lastSavedTime" class="font-semibold text-mocha-700">未同步</strong></span>
             </div>
 
             <!-- User Info & Logout -->
             <div id="userProfile" class="hidden flex items-center gap-3">
                 <span id="userEmail" class="font-medium text-mocha-700 border-l border-cream-200 pl-3"></span>
-                <button onclick="handleSignOut()" class="text-mocha-500 hover:text-red-600 transition px-2 py-1">
+                <button onclick="handleSignOut()" class="text-mocha-500 hover:text-red-600 transition px-2 py-1" title="登出帳號">
                     <i class="fa-solid fa-right-from-bracket text-base"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main id="exportContainer" class="flex-1 p-4 lg:p-6 max-w-7xl w-full mx-auto space-y-6">
-
-        <!-- Top Control & Action Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-4 cream-card p-4">
-            <div class="flex items-center gap-2 text-sm">
-                <span class="bg-accent-gold/10 text-accent-gold font-bold px-3 py-1 rounded-full border border-accent-gold/20">
-                    <i class="fa-solid fa-sliders mr-1"></i>行程工具箱
-                </span>
-                <span class="text-xs text-mocha-500 hidden sm:inline">即時同步數據與多格式導出</span>
+    <!-- Navigation Tabs Bar -->
+    <nav class="bg-cream-100 border-b border-cream-200 px-4 lg:px-8 py-2 sticky top-[61px] z-30 shadow-inner">
+        <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar w-full md:w-auto pb-1 md:pb-0">
+                <button onclick="switchTab('page1')" id="tab-page1" class="tab-btn active px-4 py-2 rounded-xl border border-cream-300 text-xs font-bold transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-route"></i> 1. 路線規劃與地圖
+                </button>
+                <button onclick="switchTab('page2')" id="tab-page2" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-xs font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-table-list"></i> 2. 行程數據管理
+                </button>
+                <button onclick="switchTab('page3')" id="tab-page3" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-xs font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie"></i> 3. 足跡地圖與統計圖表
+                </button>
+                <button onclick="switchTab('page4')" id="tab-page4" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-xs font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-utensils"></i> 4. 目的地美食與景點推薦
+                </button>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <button onclick="updateMapTile()" class="px-3 py-2 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-arrows-rotate text-accent-gold"></i> 圖資即時更新
+            <!-- Global Action Tools -->
+            <div class="hidden xl:flex items-center gap-2">
+                <button onclick="exportToExcel()" class="px-3 py-1.5 bg-white hover:bg-cream-50 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                    <i class="fa-solid fa-file-excel text-emerald-600"></i> 匯出 Excel
                 </button>
-                <button onclick="triggerExcelImport()" class="px-3 py-2 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-file-excel text-emerald-600"></i> 匯入 Excel
-                </button>
-                <input type="file" id="excelFileInput" class="hidden" accept=".xlsx, .csv" onchange="handleExcelImport(event)" />
-                <button onclick="exportToExcel()" class="px-3 py-2 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-download text-emerald-600"></i> 匯出 Excel
-                </button>
-                <button onclick="exportToPNG()" class="px-3 py-2 bg-mocha-700 hover:bg-mocha-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
-                    <i class="fa-regular fa-image"></i> 匯出 PNG
-                </button>
-                <button onclick="exportToPDF()" class="px-3 py-2 bg-accent-amber hover:opacity-90 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                <button onclick="exportToPDF()" class="px-3 py-1.5 bg-accent-amber hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
                     <i class="fa-solid fa-file-pdf"></i> 匯出 PDF 報表
                 </button>
             </div>
         </div>
+    </nav>
 
-        <!-- Section 1: JapanTravel Mode Navigation & Map -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Left Panel: Search & Transport Comparison -->
-            <div class="lg:col-span-5 space-y-4">
-                <div class="cream-card p-5 space-y-4">
-                    <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2 border-b border-cream-100 pb-3">
-                        <i class="fa-solid fa-route text-accent-gold"></i> 行程路線規劃 (JapanTravel 模式)
-                    </h2>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-xs font-bold text-mocha-500 mb-1">出發地 Origin</label>
-                            <div class="relative">
-                                <select id="originSelect" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-gold">
+    <!-- Main Content Container with Full-Page Sections -->
+    <main id="exportContainer" class="flex-1 p-4 lg:p-6 max-w-7xl w-full mx-auto">
+
+        <!-- ================= PAGE 1: 路線規劃與地圖 (JapanTravel Route Comparison & Map) ================= -->
+        <section id="page1" class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 cream-card p-4">
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="bg-accent-amber/10 text-accent-amber font-bold px-3 py-1 rounded-full border border-accent-amber/20">
+                        <i class="fa-solid fa-map-marked-alt mr-1"></i> 多模態交通導覽
+                    </span>
+                    <span class="text-xs text-mocha-500">選取台灣各縣市作為出發地與目的地，即時比價高鐵、台鐵、租車與大眾運輸</span>
+                </div>
+                <button onclick="updateMapTile()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-arrows-rotate text-accent-gold"></i> 重設地圖視角
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[650px]">
+                <!-- Left Panel: Search & Options -->
+                <div class="lg:col-span-5 space-y-4 flex flex-col">
+                    <div class="cream-card p-5 space-y-4">
+                        <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2 border-b border-cream-100 pb-3">
+                            <i class="fa-solid fa-route text-accent-amber"></i> 行程路線規劃 (JapanTravel 模式)
+                        </h2>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-mocha-500 mb-1">出發地 Origin</label>
+                                <select id="originSelect" onchange="onDestinationOrOriginChange()" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
                                     <option value="台北">台北市 (台北車站)</option>
                                     <option value="新北">新北市 (板橋車站)</option>
                                     <option value="桃園">桃園市 (桃園高鐵站)</option>
@@ -221,225 +239,306 @@
                                     <option value="台東">台東縣 (台東車站)</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-mocha-500 mb-1">目的地 Destination</label>
-                            <div class="relative">
-                                <select id="destSelect" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-gold">
+                            <div>
+                                <label class="block text-xs font-bold text-mocha-500 mb-1">目的地 Destination</label>
+                                <select id="destSelect" onchange="onDestinationOrOriginChange()" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
                                     <option value="高雄" selected>高雄市 (左營高鐵站)</option>
                                     <option value="台北">台北市 (台北車站)</option>
+                                    <option value="新竹">新竹市 (新竹車站)</option>
                                     <option value="台中">台中市 (台中車站)</option>
                                     <option value="台南">台南市 (台南車站)</option>
                                     <option value="花蓮">花蓮縣 (花蓮車站)</option>
                                     <option value="台東">台東縣 (台東車站)</option>
                                     <option value="宜蘭">宜蘭縣 (羅東車站)</option>
-                                    <option value="新竹">新竹市 (新竹車站)</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-mocha-500 mb-1">出發日期</label>
-                                <input type="date" id="tripDate" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-mocha-500 mb-1">出發日期</label>
+                                    <input type="date" id="tripDate" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-mocha-500 mb-1">出發時間</label>
+                                    <input type="time" id="tripTime" value="09:00" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-mocha-500 mb-1">出發時間</label>
-                                <input type="time" id="tripTime" value="09:00" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                            </div>
-                        </div>
 
-                        <button onclick="calculateRoute()" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white font-semibold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-magnifying-glass-location"></i> 搜尋交通方案與比較
+                            <button onclick="calculateRoute()" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white font-semibold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-magnifying-glass-location"></i> 搜尋交通方案與路線規劃
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transport Options & Cost Comparison -->
+                    <div class="cream-card p-5 space-y-3 flex-1 flex flex-col">
+                        <h3 class="text-sm font-bold text-mocha-700 flex items-center justify-between border-b border-cream-100 pb-2">
+                            <span><i class="fa-solid fa-code-compare text-accent-amber mr-1"></i> 多模態交通費用與時間比較</span>
+                            <span id="routeDistanceText" class="text-xs text-accent-amber font-semibold"></span>
+                        </h3>
+
+                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[380px]">
+                            <div class="text-xs text-mocha-500 text-center py-8">點擊「搜尋交通方案」即刻比價並生成路線</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Full Leaflet Interactive Map -->
+                <div class="lg:col-span-7 flex flex-col">
+                    <div class="cream-card p-4 flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-sm font-bold text-mocha-700 flex items-center gap-2">
+                                <i class="fa-solid fa-map text-accent-amber"></i> 台灣全島即時地圖 (Leaflet OSM)
+                            </h2>
+                            <span class="text-xs text-mocha-500 bg-cream-100 px-2.5 py-1 rounded border border-cream-200">
+                                點擊地圖標點可檢視詳細地點
+                            </span>
+                        </div>
+                        <div id="leafletMap" class="w-full flex-1 min-h-[500px] h-full"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 2: 行程數據管理 (Full-Screen Data Management) ================= -->
+        <section id="page2" class="hidden space-y-6">
+            <div class="cream-card p-5 space-y-4 min-h-[700px]">
+                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
+                            <i class="fa-solid fa-table-list text-accent-amber"></i> 滿版行程數據管理庫 (Realtime Cloud Sync)
+                        </h2>
+                        <p class="text-xs text-mocha-500 mt-0.5">即時線上同步所有已儲存之旅行節點，支援關鍵字篩選與批次匯出匯入</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" id="tableSearchInput" onkeyup="filterTripTable()" placeholder="🔍 搜尋出發點/目的地/備註..." class="px-3 py-1.5 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
+                        <button onclick="triggerExcelImport()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-excel text-emerald-600"></i> 匯入 Excel
+                        </button>
+                        <input type="file" id="excelFileInput" class="hidden" accept=".xlsx, .csv" onchange="handleExcelImport(event)" />
+                        <button onclick="exportToExcel()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-download text-emerald-600"></i> 匯出 Excel
+                        </button>
+                        <button onclick="exportToPNG()" class="px-3 py-1.5 bg-mocha-700 hover:bg-mocha-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                            <i class="fa-regular fa-image"></i> 匯出 PNG
+                        </button>
+                        <button onclick="openAddTripModal()" class="px-3 py-1.5 bg-accent-amber hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm">
+                            <i class="fa-solid fa-plus"></i> 手動新增行程點
                         </button>
                     </div>
                 </div>
 
-                <!-- Transport Options & Cost Comparison -->
-                <div class="cream-card p-5 space-y-3">
-                    <h3 class="text-sm font-bold text-mocha-700 flex items-center justify-between border-b border-cream-100 pb-2">
-                        <span><i class="fa-solid fa-code-compare text-accent-gold mr-1"></i> 多模態交通費用與時間預估</span>
-                        <span id="routeDistanceText" class="text-xs text-accent-amber font-semibold"></span>
-                    </h3>
-
-                    <div id="transportOptionsList" class="space-y-2 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
-                        <!-- Transport Option Cards render via JS -->
-                        <div class="text-xs text-mocha-500 text-center py-6">請選擇出發地與目的地並點擊搜尋</div>
-                    </div>
+                <div class="overflow-x-auto rounded-xl border border-cream-200">
+                    <table class="w-full text-left text-sm text-mocha-700">
+                        <thead class="bg-cream-100 text-xs text-mocha-700 uppercase font-bold border-b border-cream-200">
+                            <tr>
+                                <th class="px-4 py-3.5">日期</th>
+                                <th class="px-4 py-3.5">時間</th>
+                                <th class="px-4 py-3.5">出發點</th>
+                                <th class="px-4 py-3.5">目的地</th>
+                                <th class="px-4 py-3.5">交通工具</th>
+                                <th class="px-4 py-3.5">預估費用</th>
+                                <th class="px-4 py-3.5">詳細備註</th>
+                                <th class="px-4 py-3.5 text-center">功能操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tripTableBody" class="divide-y divide-cream-100 text-xs">
+                            <tr>
+                                <td colspan="8" class="text-center py-8 text-mocha-500">載入中或尚無行程資料...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </section>
 
-            <!-- Right Panel: Leaflet Interactive Map -->
-            <div class="lg:col-span-7 flex flex-col min-h-[450px]">
-                <div class="cream-card p-4 flex-1 flex flex-col">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-sm font-bold text-mocha-700 flex items-center gap-2">
-                            <i class="fa-solid fa-map text-accent-gold"></i> 台灣全島即時地圖
-                        </h2>
-                        <span class="text-xs text-mocha-500 bg-cream-100 px-2 py-1 rounded border border-cream-200">
-                            Leaflet.js + OpenStreetMap
+
+        <!-- ================= PAGE 3: 足跡地圖與統計圖表 (Footprint Map & Analytics) ================= -->
+        <section id="page3" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[700px]">
+                
+                <!-- Left: Interactive Taiwan SVG Map with Red Pegman -->
+                <div class="lg:col-span-6 cream-card p-6 flex flex-col space-y-4">
+                    <div class="flex items-center justify-between border-b border-cream-100 pb-3">
+                        <div>
+                            <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
+                                <i class="fa-solid fa-child-reaching text-red-500"></i> 個人旅途台灣足跡 (紅小人標示)
+                            </h2>
+                            <p class="text-xs text-mocha-500 mt-1">點擊地圖縣市即可切換足跡解鎖狀態</p>
+                        </div>
+                        <span id="footprintCoverage" class="text-xs font-bold text-white bg-accent-amber px-3 py-1.5 rounded-full shadow-sm">
+                            足跡覆蓋率: 0%
                         </span>
                     </div>
-                    <div id="leafletMap" class="w-full flex-1 min-h-[400px]"></div>
-                </div>
-            </div>
 
-        </div>
-
-        <!-- Section 2: Trip Items Management Table -->
-        <div class="cream-card p-5 space-y-4">
-            <div class="flex items-center justify-between border-b border-cream-100 pb-3">
-                <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-accent-gold"></i> 行程點列表管理 (Realtime Cloud Sync)
-                </h2>
-                <button onclick="openAddTripModal()" class="px-3 py-1.5 bg-accent-gold hover:bg-amber-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm">
-                    <i class="fa-solid fa-plus"></i> 新增行程點
-                </button>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-mocha-700">
-                    <thead class="bg-cream-100 text-xs text-mocha-700 uppercase font-semibold border-b border-cream-200">
-                        <tr>
-                            <th class="px-4 py-3">日期</th>
-                            <th class="px-4 py-3">時間</th>
-                            <th class="px-4 py-3">出發點</th>
-                            <th class="px-4 py-3">目的地</th>
-                            <th class="px-4 py-3">建議交通工具</th>
-                            <th class="px-4 py-3">預估費用</th>
-                            <th class="px-4 py-3">備註</th>
-                            <th class="px-4 py-3 text-center">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tripTableBody" class="divide-y divide-cream-100 text-xs">
-                        <tr>
-                            <td colspan="8" class="text-center py-6 text-mocha-500">載入中或無行程資料...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Section 3: Data Analytics & Red Pegman Footprint Map -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Red Pegman Taiwan Footprint Map -->
-            <div class="lg:col-span-6 cream-card p-5 space-y-4">
-                <div class="flex items-center justify-between border-b border-cream-100 pb-3">
-                    <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
-                        <i class="fa-solid fa-child-reaching text-red-500"></i> 個人旅途台灣足跡 (紅小人地圖)
-                    </h2>
-                    <span id="footprintCoverage" class="text-xs font-bold text-accent-amber bg-cream-100 px-2.5 py-1 rounded-full border border-cream-200">
-                        足跡覆蓋率: 0%
-                    </span>
-                </div>
-                <p class="text-xs text-mocha-500">點擊縣市即可切換造訪狀態，系統會即時在地圖標記紅色小人標誌。</p>
-
-                <!-- Taiwan Interactive Map (SVG) -->
-                <div class="relative w-full flex justify-center py-2 bg-cream-50/50 rounded-xl border border-cream-200 overflow-hidden min-h-[350px]">
-                    <svg id="taiwanSvgMap" viewBox="0 0 400 500" class="w-full max-w-[340px] h-auto drop-shadow-sm">
-                        <!-- Counties defined as interactive shapes -->
-                        <!-- Taipei / New Taipei / Keelung -->
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('台北')" data-county="台北">
-                            <circle cx="270" cy="70" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="270" y="74" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台北</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('新北')" data-county="新北">
-                            <circle cx="295" cy="85" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="295" y="89" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">新北</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('桃園')" data-county="桃園">
-                            <circle cx="235" cy="85" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="235" y="89" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">桃園</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('新竹')" data-county="新竹">
-                            <circle cx="215" cy="115" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="215" y="119" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">新竹</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('苗栗')" data-county="苗栗">
-                            <circle cx="195" cy="145" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="195" y="149" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">苗栗</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('台中')" data-county="台中">
-                            <circle cx="180" cy="180" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="180" y="184" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台中</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('彰化')" data-county="彰化">
-                            <circle cx="155" cy="205" r="15" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="155" y="209" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">彰化</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('南投')" data-county="南投">
-                            <circle cx="210" cy="225" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="210" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">南投</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('雲林')" data-county="雲林">
-                            <circle cx="145" cy="240" r="15" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="145" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">雲林</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('嘉義')" data-county="嘉義">
-                            <circle cx="150" cy="275" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="150" y="279" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">嘉義</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('台南')" data-county="台南">
-                            <circle cx="135" cy="315" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="135" y="319" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台南</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('高雄')" data-county="高雄">
-                            <circle cx="155" cy="360" r="20" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="155" y="364" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">高雄</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('屏東')" data-county="屏東">
-                            <circle cx="170" cy="420" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="170" y="424" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">屏東</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('宜蘭')" data-county="宜蘭">
-                            <circle cx="290" cy="130" r="17" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="290" y="134" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">宜蘭</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('花蓮')" data-county="花蓮">
-                            <circle cx="265" cy="225" r="22" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="265" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">花蓮</text>
-                        </g>
-                        <g class="county-group cursor-pointer" onclick="toggleCounty('台東')" data-county="台東">
-                            <circle cx="230" cy="345" r="20" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
-                            <text x="230" y="349" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台東</text>
-                        </g>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Chart Analytics -->
-            <div class="lg:col-span-6 cream-card p-5 space-y-4">
-                <div class="flex items-center justify-between border-b border-cream-100 pb-3">
-                    <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-pie text-accent-gold"></i> 行程統計與交通工具占比
-                    </h2>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-cream-50 p-3 rounded-lg border border-cream-200">
-                        <span class="text-xs text-mocha-500 block">總規劃行程次數</span>
-                        <span id="statTotalTrips" class="text-xl font-bold text-mocha-700">0</span>
-                    </div>
-                    <div class="bg-cream-50 p-3 rounded-lg border border-cream-200">
-                        <span class="text-xs text-mocha-500 block">預估總交通支出</span>
-                        <span id="statTotalCost" class="text-xl font-bold text-accent-amber">NT$ 0</span>
+                    <!-- Taiwan Interactive SVG Map -->
+                    <div class="relative w-full flex-1 flex justify-center items-center py-4 bg-cream-50/60 rounded-xl border border-cream-200 min-h-[420px]">
+                        <svg id="taiwanSvgMap" viewBox="0 0 400 500" class="w-full max-w-[360px] h-auto drop-shadow-md">
+                            <!-- Taipei / New Taipei / Keelung -->
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('台北')" data-county="台北">
+                                <circle cx="270" cy="70" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="270" y="74" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台北</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('新北')" data-county="新北">
+                                <circle cx="295" cy="85" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="295" y="89" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">新北</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('桃園')" data-county="桃園">
+                                <circle cx="235" cy="85" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="235" y="89" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">桃園</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('新竹')" data-county="新竹">
+                                <circle cx="215" cy="115" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="215" y="119" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">新竹</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('苗栗')" data-county="苗栗">
+                                <circle cx="195" cy="145" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="195" y="149" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">苗栗</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('台中')" data-county="台中">
+                                <circle cx="180" cy="180" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="180" y="184" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台中</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('彰化')" data-county="彰化">
+                                <circle cx="155" cy="205" r="15" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="155" y="209" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">彰化</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('南投')" data-county="南投">
+                                <circle cx="210" cy="225" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="210" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">南投</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('雲林')" data-county="雲林">
+                                <circle cx="145" cy="240" r="15" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="145" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">雲林</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('嘉義')" data-county="嘉義">
+                                <circle cx="150" cy="275" r="16" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="150" y="279" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">嘉義</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('台南')" data-county="台南">
+                                <circle cx="135" cy="315" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="135" y="319" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台南</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('高雄')" data-county="高雄">
+                                <circle cx="155" cy="360" r="20" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="155" y="364" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">高雄</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('屏東')" data-county="屏東">
+                                <circle cx="170" cy="420" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="170" y="424" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">屏東</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('宜蘭')" data-county="宜蘭">
+                                <circle cx="290" cy="130" r="17" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="290" y="134" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">宜蘭</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('花蓮')" data-county="花蓮">
+                                <circle cx="265" cy="225" r="22" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="265" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">花蓮</text>
+                            </g>
+                            <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('台東')" data-county="台東">
+                                <circle cx="230" cy="345" r="20" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
+                                <text x="230" y="349" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台東</text>
+                            </g>
+                        </svg>
                     </div>
                 </div>
 
-                <div class="h-[260px] flex items-center justify-center pt-2">
-                    <canvas id="transportChart"></canvas>
+                <!-- Right: Visual Charts Analytics -->
+                <div class="lg:col-span-6 cream-card p-6 flex flex-col space-y-4">
+                    <div class="border-b border-cream-100 pb-3">
+                        <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-accent-amber"></i> 行程統計與交通工具占比
+                        </h2>
+                        <p class="text-xs text-mocha-500">自動分析目前已規劃行程的交通工具分佈與開銷總計</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-cream-50 p-4 rounded-xl border border-cream-200 shadow-sm">
+                            <span class="text-xs text-mocha-500 block font-medium">總規劃行程點數</span>
+                            <span id="statTotalTrips" class="text-2xl font-bold text-mocha-700 mt-1 block">0</span>
+                        </div>
+                        <div class="bg-cream-50 p-4 rounded-xl border border-cream-200 shadow-sm">
+                            <span class="text-xs text-mocha-500 block font-medium">預估總交通支出</span>
+                            <span id="statTotalCost" class="text-2xl font-bold text-accent-amber mt-1 block">NT$ 0</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex items-center justify-center min-h-[350px] pt-2">
+                        <canvas id="transportChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 4: 目的地美食與景點推薦 (Attractions & Food Recommendations) ================= -->
+        <section id="page4" class="hidden space-y-6">
+            <div class="cream-card p-6 space-y-6 min-h-[700px]">
+                <!-- Header & Controls -->
+                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
+                            <i class="fa-solid fa-utensils text-accent-amber"></i> 目的地在地美食與精選景點導覽
+                        </h2>
+                        <p class="text-xs text-mocha-500 mt-1">
+                            根據您選取的目的地 (<span id="recommendCityName" class="font-bold text-accent-amber">高雄</span>)，自動帶出必吃特色美食與打卡景點
+                        </p>
+                    </div>
+
+                    <!-- Destination Switcher & Category Filters -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-mocha-700">選擇縣市:</label>
+                            <select id="recCitySelect" onchange="changeRecommendationCity(this.value)" class="px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs font-bold text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
+                                <option value="台北">台北市</option>
+                                <option value="新北">新北市</option>
+                                <option value="桃園">桃園市</option>
+                                <option value="新竹">新竹市/縣</option>
+                                <option value="台中">台中市</option>
+                                <option value="嘉義">嘉義市/縣</option>
+                                <option value="台南">台南市</option>
+                                <option value="高雄" selected>高雄市</option>
+                                <option value="屏東">屏東縣</option>
+                                <option value="宜蘭">宜蘭縣</option>
+                                <option value="花蓮">花蓮縣</option>
+                                <option value="台東">台東縣</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tag Filter Buttons -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="filterRecCategory('ALL')" id="filter-ALL" class="rec-filter-btn active px-3.5 py-1.5 rounded-full border border-mocha-700 bg-mocha-700 text-white text-xs font-bold transition">
+                        🌟 全部推薦
+                    </button>
+                    <button onclick="filterRecCategory('景點')" id="filter-景點" class="rec-filter-btn px-3.5 py-1.5 rounded-full border border-cream-300 bg-cream-50 text-mocha-700 hover:bg-cream-100 text-xs font-semibold transition">
+                        🏞️ 熱門景點
+                    </button>
+                    <button onclick="filterRecCategory('美食')" id="filter-美食" class="rec-filter-btn px-3.5 py-1.5 rounded-full border border-cream-300 bg-cream-50 text-mocha-700 hover:bg-cream-100 text-xs font-semibold transition">
+                        🍜 在地必吃美食
+                    </button>
+                    <button onclick="filterRecCategory('地標')" id="filter-地標" class="rec-filter-btn px-3.5 py-1.5 rounded-full border border-cream-300 bg-cream-50 text-mocha-700 hover:bg-cream-100 text-xs font-semibold transition">
+                        🏛️ 文化地標
+                    </button>
+                </div>
+
+                <!-- Recommendation Cards Grid -->
+                <div id="recommendationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                    <!-- Cards render dynamically via JavaScript -->
                 </div>
             </div>
-
-        </div>
+        </section>
 
     </main>
 
     <!-- Modal for Adding Manual Trip -->
     <div id="addTripModal" class="fixed inset-0 bg-mocha-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="cream-card max-w-lg w-full p-6 space-y-4 relative">
+        <div class="cream-card max-w-lg w-full p-6 space-y-4 relative shadow-2xl">
             <h3 class="text-base font-bold text-mocha-700 border-b border-cream-100 pb-2">新增客製化行程點</h3>
             
             <form id="addTripForm" onsubmit="saveCustomTrip(event)" class="space-y-3">
@@ -461,7 +560,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-mocha-500 mb-1">目的地</label>
-                        <input type="text" id="modalDest" required placeholder="例如: 高雄左營站" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
+                        <input type="text" id="modalDest" required placeholder="例如: 駁二藝術特區" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
                     </div>
                 </div>
 
@@ -474,7 +573,7 @@
                             <option value="自行開車">自行開車 / 租車</option>
                             <option value="計程車 / Uber">計程車 / Uber</option>
                             <option value="捷運 / 公車">捷運 / 公車</option>
-                            <option value="步行 / 單車">步行 / YouBike</option>
+                            <option value="步行 / YouBike">步行 / YouBike</option>
                         </select>
                     </div>
                     <div>
@@ -485,12 +584,12 @@
 
                 <div>
                     <label class="block text-xs font-bold text-mocha-500 mb-1">備註 / 景點規劃</label>
-                    <textarea id="modalNotes" rows="2" placeholder="備註旅遊注意事項..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700"></textarea>
+                    <textarea id="modalNotes" rows="2" placeholder="備註旅遊注意事項或美食口袋名單..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700"></textarea>
                 </div>
 
                 <div class="flex gap-2 justify-end pt-2">
                     <button type="button" onclick="closeAddTripModal()" class="px-4 py-2 border border-cream-300 text-mocha-700 rounded-lg text-xs font-semibold hover:bg-cream-100">取消</button>
-                    <button type="submit" class="px-4 py-2 bg-mocha-700 text-white rounded-lg text-xs font-semibold hover:bg-mocha-900">儲存行程</button>
+                    <button type="submit" class="px-4 py-2 bg-mocha-700 text-white rounded-lg text-xs font-semibold hover:bg-mocha-900 shadow-sm">儲存行程</button>
                 </div>
             </form>
         </div>
@@ -516,6 +615,7 @@
         let currentUser = null;
         let currentTrips = [];
         let visitedCounties = new Set(['台北', '台中', '高雄']); // Default footprint demo
+        let currentRecCategory = 'ALL';
 
         // Taiwan Major Station Coordinates Map
         const locationCoords = {
@@ -537,10 +637,47 @@
             '台東': [22.7932, 121.1232]
         };
 
+        // --- Rich Database of Attractions & Food Recommendations by County ---
+        const recommendationsDb = {
+            '高雄': [
+                { name: '駁二藝術特區', type: '景點', category: '景點', rating: 4.8, desc: '前身為港口倉庫群，現已轉型為高雄最受歡迎的當代藝術與文創產業基地。', tag: '文創打卡', img: 'https://images.unsplash.com/photo-1541417988254-6e154de6a29a?w=500&q=80' },
+                { name: '丹丹漢堡 (七賢店)', type: '美食', category: '美食', rating: 4.7, desc: '南台灣限定速食傳奇！麵線羹配香酥炸雞，極致東西合璧的南台灣平民美味。', tag: '南霸天速食', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80' },
+                { name: '高雄流行音樂中心', type: '地標', category: '地標', rating: 4.9, desc: '蜂巢造型的前衛建築，夜晚配合光軌與港灣倒影，為高雄港灣最亮眼地標。', tag: '夜景地標', img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80' },
+                { name: '六合國際觀光夜市', type: '美食', category: '美食', rating: 4.5, desc: '海鮮粥、木瓜牛奶、烏魚子與各式老字號小吃集中地，高雄夜生活首選。', tag: '夜市必吃', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80' },
+                { name: '旗津老街與風車公園', type: '景點', category: '景點', rating: 4.6, desc: '搭乘渡輪前往旗津，品嚐新鮮海產、騎乘單車遠眺高雄港夕陽名景。', tag: '無敵海景', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80' }
+            ],
+            '台北': [
+                { name: '台北101觀景台', type: '地標', category: '地標', rating: 4.9, desc: '曾為世界第一高樓，鳥瞰台北盆地絕美全景與信義商圈繁華魅力。', tag: '必訪地標', img: 'https://images.unsplash.com/photo-1508248467877-a64016d9a16f?w=500&q=80' },
+                { name: '鼎泰豐 (信義本店)', type: '美食', category: '美食', rating: 4.8, desc: '米其林推薦經典小籠包，十八折黃金摺數，口感鮮美湯汁豐富。', tag: '米其林名店', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80' },
+                { name: '國立故宮博物院', type: '景點', category: '景點', rating: 4.8, desc: '收藏近七十萬件華夏珍貴文物與藝術品，翠玉白菜與肉形石享譽國際。', tag: '歷史文化', img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80' },
+                { name: '士林夜市 (豪大大雞排)', type: '美食', category: '美食', rating: 4.6, desc: '比臉還大的超香大雞排、生炒花枝羹與忠誠號蚵仔煎。', tag: '經典美食', img: 'https://images.unsplash.com/photo-1565299686447-37a5f1e18374?w=500&q=80' }
+            ],
+            '新竹': [
+                { name: '新竹城隍廟廟口小吃', type: '美食', category: '美食', rating: 4.7, desc: '百年老店雲集！新竹貢丸湯、正宗新竹米粉與潤餅鴨肉飯。', tag: '在地老字號', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80' },
+                { name: '新竹市立動物園', type: '景點', category: '景點', rating: 4.6, desc: '全台最古老的原址動物園，再生轉型為無欄桿友善動物園公園。', tag: '親子休閒', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=500&q=80' },
+                { name: '南寮漁港 (十七公里海岸線)', type: '景點', category: '景點', rating: 4.7, desc: '地中海風情建築、魚鱗天梯與夕陽海風單車綠道。', tag: '絕美海岸', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80' }
+            ],
+            '台中': [
+                { name: '宮原眼科 (日出冰淇淋)', type: '美食', category: '美食', rating: 4.8, desc: '紅磚騎樓與哈利波特霍格華茲風格復古建築，精緻美味冰淇淋聖品。', tag: '熱門打卡', img: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=500&q=80' },
+                { name: '台中國家歌劇院', type: '地標', category: '地標', rating: 4.9, desc: '伊東豊雄設計美學巨作，全球最難興建的美聲涵洞曲牆建築。', tag: '國家級地標', img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80' },
+                { name: '逢甲甲文界夜市', type: '美食', category: '美食', rating: 4.7, desc: '全台創意小吃發源地！明倫蛋餅、章魚燒與大腸包小腸。', tag: '夜市王國', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80' }
+            ],
+            '台南': [
+                { name: '奇美博物館', type: '地標', category: '地標', rating: 4.9, desc: '西洋古典宮殿造型，擁有極為豐厚的西洋藝術、樂器與兵器珍藏。', tag: '夢幻宮殿', img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80' },
+                { name: '文章牛肉湯', type: '美食', category: '美食', rating: 4.9, desc: '台南溫體牛肉當日直達，滾燙高湯沖涮出粉嫩極致鮮甜味。', tag: '台南美食', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80' },
+                { name: '神農街老宅巷弄', type: '景點', category: '景點', rating: 4.7, desc: '保存完美的清代老老街巷，復古燈籠與文創咖啡酒吧林立。', tag: '古都漫步', img: 'https://images.unsplash.com/photo-1541417988254-6e154de6a29a?w=500&q=80' }
+            ],
+            '花蓮': [
+                { name: '太魯閣國家公園 (燕子口)', type: '景點', category: '景點', rating: 4.9, desc: '鬼斧神工的大理石峽谷景致，高聳峭壁與急湍溪水驚艷國際。', tag: '世界級奇景', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500&q=80' },
+                { name: '炸蛋蔥油餅 (黃車)', type: '美食', category: '美食', rating: 4.8, desc: '花蓮復興街傳奇小吃，酥炸餅皮包覆半熟流心蛋黃。', tag: '排隊爆款', img: 'https://images.unsplash.com/photo-1565299686447-37a5f1e18374?w=500&q=80' }
+            ]
+        };
+
         // --- 2. Leaflet Map Initialization ---
         let map, polylineLayer, originMarker, destMarker;
 
         function initLeafletMap() {
+            if (map) return;
             map = L.map('leafletMap').setView([23.7, 120.95], 7);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
@@ -550,11 +687,47 @@
         function updateMapTile() {
             if (map) {
                 map.invalidateSize();
-                alert('地圖圖資已手動強制更新完成。');
+                map.setView([23.7, 120.95], 7);
             }
         }
 
-        // --- 3. Firebase Auth Handlers ---
+        // --- 3. Full Page Tab Switcher ---
+        function switchTab(pageId) {
+            const pages = ['page1', 'page2', 'page3', 'page4'];
+            pages.forEach(p => {
+                document.getElementById(p).classList.add('hidden');
+                document.getElementById(`tab-${p}`).classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.remove('hidden');
+            document.getElementById(`tab-${pageId}`).classList.add('active');
+
+            if (pageId === 'page1') {
+                setTimeout(() => { if (map) map.invalidateSize(); }, 150);
+            } else if (pageId === 'page3') {
+                updateAnalytics();
+                renderFootprintMap();
+            } else if (pageId === 'page4') {
+                renderRecommendations();
+            }
+        }
+
+        // Auto Sync Destination dropdown to Page 4 Recommendation City
+        function onDestinationOrOriginChange() {
+            const dest = document.getElementById('destSelect').value;
+            const recSelect = document.getElementById('recCitySelect');
+            if (recommendationsDb[dest]) {
+                recSelect.value = dest;
+                document.getElementById('recommendCityName').textContent = dest;
+            }
+        }
+
+        function changeRecommendationCity(city) {
+            document.getElementById('recommendCityName').textContent = city;
+            renderRecommendations();
+        }
+
+        // --- 4. Firebase Auth Handlers ---
         auth.onAuthStateChanged((user) => {
             const authModal = document.getElementById('authModal');
             const userProfile = document.getElementById('userProfile');
@@ -566,7 +739,6 @@
                 userProfile.classList.remove('hidden');
                 userEmail.textContent = user.email;
 
-                // Listen to Realtime Database
                 listenToUserData(user.uid);
                 listenConnectionStatus();
             } else {
@@ -595,14 +767,14 @@
             const errorDiv = document.getElementById('authError');
 
             if (!email || !password) {
-                errorDiv.textContent = '請輸入 Email 與密碼';
+                errorDiv.textContent = '請輸入完整的 Email 與密碼';
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
             auth.createUserWithEmailAndPassword(email, password)
                 .then(() => {
-                    alert('註冊成功！已為您登入。');
+                    alert('帳號註冊成功！系統已為您直接登入。');
                 })
                 .catch((error) => {
                     errorDiv.textContent = '註冊失敗: ' + error.message;
@@ -614,7 +786,7 @@
             auth.signOut();
         }
 
-        // --- 4. Realtime Database Data Handling ---
+        // --- 5. Realtime Database Data Sync ---
         function listenConnectionStatus() {
             const connectedRef = db.ref(".info/connected");
             const connectedDot = document.getElementById('connectedDot');
@@ -626,13 +798,14 @@
                     connectedStatus.textContent = "即時連線 (Online)";
                 } else {
                     connectedDot.className = "w-2.5 h-2.5 rounded-full bg-red-400 inline-block animate-pulse";
-                    connectedStatus.textContent = "離線 (Offline)";
+                    connectedStatus.textContent = "離線中 (Offline)";
                 }
             });
         }
 
         function listenToUserData(uid) {
-            const tripsRef = db.ref(`users/${uid}/trips`);
+            // Travels Realtime Sync Path
+            const tripsRef = db.ref(`travels/${uid}`);
             tripsRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 currentTrips = [];
@@ -646,8 +819,8 @@
                 updateLastSavedTime();
             });
 
-            // Visited footprint
-            const footprintRef = db.ref(`users/${uid}/footprint`);
+            // Footprint Realtime Sync Path
+            const footprintRef = db.ref(`footprints/${uid}`);
             footprintRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -659,24 +832,24 @@
 
         function saveTripToFirebase(tripData) {
             if (!currentUser) return;
-            const tripsRef = db.ref(`users/${currentUser.uid}/trips`);
+            const tripsRef = db.ref(`travels/${currentUser.uid}`);
             tripsRef.push(tripData).then(() => {
-                db.ref(`users/${currentUser.uid}/lastSaved`).set(new Date().toISOString());
+                db.ref(`lastSaved/${currentUser.uid}`).set(new Date().toISOString());
             });
         }
 
         function deleteTrip(tripId) {
             if (!currentUser) return;
-            db.ref(`users/${currentUser.uid}/trips/${tripId}`).remove();
+            db.ref(`travels/${currentUser.uid}/${tripId}`).remove();
         }
 
         function updateLastSavedTime() {
             const now = new Date();
-            const formatted = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const formatted = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
             document.getElementById('lastSavedTime').textContent = formatted;
         }
 
-        // --- 5. JapanTravel Mode Route & Multi-modal Cost Calculation ---
+        // --- 6. JapanTravel Mode Route & Multi-modal Distance ---
         function calculateDistance(coord1, coord2) {
             const R = 6371; // km
             const dLat = (coord2[0] - coord1[0]) * Math.PI / 180;
@@ -693,7 +866,7 @@
             const destKey = document.getElementById('destSelect').value;
 
             if (originKey === destKey) {
-                alert('出發地與目的地不能相同！');
+                alert('出發地與目的地不能為相同縣市！');
                 return;
             }
 
@@ -703,7 +876,6 @@
 
             document.getElementById('routeDistanceText').textContent = `預估直線距離: ${dist} km`;
 
-            // Draw line on Leaflet map
             if (polylineLayer) map.removeLayer(polylineLayer);
             if (originMarker) map.removeLayer(originMarker);
             if (destMarker) map.removeLayer(destMarker);
@@ -711,13 +883,12 @@
             originMarker = L.marker(origin).addTo(map).bindPopup(`<b>出發點</b>: ${originKey}`).openPopup();
             destMarker = L.marker(dest).addTo(map).bindPopup(`<b>目的地</b>: ${destKey}`);
 
-            polylineLayer = L.polyline([origin, dest], { color: '#C5A059', weight: 4, opacity: 0.8, dashArray: '8, 8' }).addTo(map);
-            map.fitBounds(polylineLayer.getBounds(), { padding: [50, 50] });
+            polylineLayer = L.polyline([origin, dest], { color: '#B85B35', weight: 4, opacity: 0.85, dashArray: '6, 6' }).addTo(map);
+            map.fitBounds(polylineLayer.getBounds(), { padding: [40, 40] });
 
-            // Generate JapanTravel Style Multi-modal Options
             generateTransportOptions(dist, originKey, destKey);
 
-            // Auto add toVisited
+            // Auto add visited footprints
             visitedCounties.add(originKey);
             visitedCounties.add(destKey);
             saveFootprintToFirebase();
@@ -732,55 +903,47 @@
                     mode: '台灣高鐵 (THSR)',
                     icon: 'fa-train-subway',
                     color: 'text-amber-600',
-                    time: `${Math.max(30, Math.round(dist * 0.45))} 分鐘`,
+                    time: `${Math.max(25, Math.round(dist * 0.42))} 分鐘`,
                     cost: Math.round(dist * 4.2),
-                    desc: `${originName}高鐵站 ➔ ${destName}高鐵站 (直達或行經主要站)`
+                    desc: `${originName}高鐵站 ➔ ${destName}高鐵站`
                 },
                 {
                     mode: '台鐵自強號 (TRA)',
                     icon: 'fa-train',
                     color: 'text-blue-600',
-                    time: `${Math.round(dist * 1.1)} 分鐘`,
+                    time: `${Math.round(dist * 1.05)} 分鐘`,
                     cost: Math.round(dist * 2.2),
-                    desc: '舒適座席，適合中長途沿途觀光'
+                    desc: '沿途觀光風光，經濟舒適'
                 },
                 {
                     mode: '自行開車 / 租車',
                     icon: 'fa-car',
                     color: 'text-emerald-600',
-                    time: `${Math.round(dist * 0.9)} 分鐘`,
-                    cost: Math.round(dist * 3.5 + 150), // Fuel + Tolls
-                    desc: `含國道ETC過路費與油錢預估 (約 NT$${Math.round(dist * 3.5 + 150)})`
+                    time: `${Math.round(dist * 0.88)} 分鐘`,
+                    cost: Math.round(dist * 3.5 + 120),
+                    desc: `含國道ETC過路費與油錢 (約 NT$${Math.round(dist * 3.5 + 120)})`
                 },
                 {
                     mode: '計程車 / Uber',
                     icon: 'fa-taxi',
                     color: 'text-yellow-600',
-                    time: `${Math.round(dist * 0.85)} 分鐘`,
+                    time: `${Math.round(dist * 0.82)} 分鐘`,
                     cost: Math.round(dist * 22 + 85),
-                    desc: `車資預估範圍 NT$${Math.round(dist * 20)}-${Math.round(dist * 25)}`
+                    desc: '專車直達，彈性省時'
                 },
                 {
-                    mode: '捷運 / 客運公車',
+                    mode: '捷運 / 國道客運',
                     icon: 'fa-bus',
                     color: 'text-purple-600',
-                    time: `${Math.round(dist * 1.5)} 分鐘`,
+                    time: `${Math.round(dist * 1.4)} 分鐘`,
                     cost: Math.round(dist * 1.2),
-                    desc: '經濟實惠的大眾運輸轉乘方案'
-                },
-                {
-                    mode: 'YouBike / 單車',
-                    icon: 'fa-bicycle',
-                    color: 'text-teal-600',
-                    time: `${Math.round(dist * 4)} 分鐘`,
-                    cost: Math.round(dist * 10),
-                    desc: `消耗熱量約 ${dist * 35} kcal`
+                    desc: '平價長途客運接駁'
                 }
             ];
 
             options.forEach(opt => {
                 const card = document.createElement('div');
-                card.className = "bg-cream-50 hover:bg-cream-100 p-3 rounded-lg border border-cream-200 transition flex items-center justify-between";
+                card.className = "bg-cream-50 hover:bg-cream-100 p-3 rounded-xl border border-cream-200 transition flex items-center justify-between";
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center border border-cream-200 shadow-sm ${opt.color}">
@@ -794,8 +957,8 @@
                     <div class="text-right">
                         <div class="text-xs font-bold text-mocha-700"><i class="fa-regular fa-clock mr-1"></i>${opt.time}</div>
                         <div class="text-xs font-semibold text-accent-amber">NT$ ${opt.cost}</div>
-                        <button onclick="addSelectedOptionToTrip('${originName}', '${destName}', '${opt.mode}', ${opt.cost})" class="mt-1 px-2 py-0.5 bg-mocha-700 text-white rounded text-[10px] hover:bg-mocha-900">
-                            加入行程
+                        <button onclick="addSelectedOptionToTrip('${originName}', '${destName}', '${opt.mode}', ${opt.cost})" class="mt-1 px-2.5 py-1 bg-mocha-700 hover:bg-mocha-900 text-white rounded text-[10px] font-semibold transition">
+                            + 加入行程
                         </button>
                     </div>
                 `;
@@ -803,28 +966,29 @@
             });
         }
 
-        function addSelectedOptionToTrip(origin, dest, mode, cost) {
-            const today = new Date().toISOString().split('T')[0];
+        function addSelectedOptionToTrip(origin, dest, mode, cost, customNotes) {
+            const dateVal = document.getElementById('tripDate').value || new Date().toISOString().split('T')[0];
+            const timeVal = document.getElementById('tripTime').value || '10:00';
             const trip = {
-                date: today,
-                time: "10:00",
+                date: dateVal,
+                time: timeVal,
                 origin: origin,
                 dest: dest,
                 mode: mode,
                 cost: cost,
-                notes: "自 JapanTravel 交通導覽加入"
+                notes: customNotes || "由路線導覽/美食推薦一鍵加入"
             };
             saveTripToFirebase(trip);
-            alert('成功加入行程列表！');
+            alert(`已成功將【${origin} ➔ ${dest}】加入您的行程管理庫！`);
         }
 
-        // --- 6. Render Trip Table ---
+        // --- 7. Page 2: Render & Filter Itinerary Table ---
         function renderTripTable() {
             const tbody = document.getElementById('tripTableBody');
             tbody.innerHTML = '';
 
             if (currentTrips.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-mocha-500">尚無行程資料，請搜尋並加入行程。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-mocha-500">尚無行程數據，請至頁面 1 或 4 新增行程點。</td></tr>`;
                 return;
             }
 
@@ -832,15 +996,15 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-cream-50 transition border-b border-cream-100";
                 tr.innerHTML = `
-                    <td class="px-4 py-3 font-medium">${t.date || '-'}</td>
-                    <td class="px-4 py-3">${t.time || '-'}</td>
-                    <td class="px-4 py-3 font-semibold text-mocha-700">${t.origin}</td>
-                    <td class="px-4 py-3 font-semibold text-mocha-700">${t.dest}</td>
-                    <td class="px-4 py-3"><span class="bg-cream-200 text-mocha-900 px-2 py-0.5 rounded text-[11px] font-medium">${t.mode}</span></td>
-                    <td class="px-4 py-3 font-bold text-accent-amber">NT$ ${t.cost || 0}</td>
-                    <td class="px-4 py-3 text-mocha-500">${t.notes || '-'}</td>
-                    <td class="px-4 py-3 text-center">
-                        <button onclick="deleteTrip('${t.id}')" class="text-red-500 hover:text-red-700 p-1">
+                    <td class="px-4 py-3.5 font-medium">${t.date || '-'}</td>
+                    <td class="px-4 py-3.5">${t.time || '-'}</td>
+                    <td class="px-4 py-3.5 font-bold text-mocha-700">${t.origin}</td>
+                    <td class="px-4 py-3.5 font-bold text-mocha-700">${t.dest}</td>
+                    <td class="px-4 py-3.5"><span class="bg-cream-200 text-mocha-900 px-2.5 py-1 rounded-full text-[11px] font-semibold">${t.mode}</span></td>
+                    <td class="px-4 py-3.5 font-bold text-accent-amber">NT$ ${t.cost || 0}</td>
+                    <td class="px-4 py-3.5 text-mocha-500 max-w-xs truncate">${t.notes || '-'}</td>
+                    <td class="px-4 py-3.5 text-center">
+                        <button onclick="deleteTrip('${t.id}')" class="text-red-500 hover:text-red-700 p-1 font-semibold transition" title="刪除行程">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
@@ -849,32 +1013,16 @@
             });
         }
 
-        // --- 7. Modal Handlers for Manual Trip ---
-        function openAddTripModal() {
-            document.getElementById('addTripModal').classList.remove('hidden');
-            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+        function filterTripTable() {
+            const input = document.getElementById('tableSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tripTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
         }
 
-        function closeAddTripModal() {
-            document.getElementById('addTripModal').classList.add('hidden');
-        }
-
-        function saveCustomTrip(e) {
-            e.preventDefault();
-            const trip = {
-                date: document.getElementById('modalDate').value,
-                time: document.getElementById('modalTime').value,
-                origin: document.getElementById('modalOrigin').value,
-                dest: document.getElementById('modalDest').value,
-                mode: document.getElementById('modalMode').value,
-                cost: Number(document.getElementById('modalCost').value) || 0,
-                notes: document.getElementById('modalNotes').value
-            };
-            saveTripToFirebase(trip);
-            closeAddTripModal();
-        }
-
-        // --- 8. Taiwan Red Pegman Footprint Map ---
+        // --- 8. Page 3: SVG Red Pegman Footprint Map & Chart.js ---
         function toggleCounty(countyName) {
             if (visitedCounties.has(countyName)) {
                 visitedCounties.delete(countyName);
@@ -887,7 +1035,7 @@
 
         function saveFootprintToFirebase() {
             if (!currentUser) return;
-            db.ref(`users/${currentUser.uid}/footprint`).set(Array.from(visitedCounties));
+            db.ref(`footprints/${currentUser.uid}`).set(Array.from(visitedCounties));
         }
 
         function renderFootprintMap() {
@@ -898,24 +1046,22 @@
                 const name = g.getAttribute('data-county');
                 const circle = g.querySelector('circle');
                 
-                // Remove existing pegman icon if any
                 const oldPegman = g.querySelector('.pegman-icon');
                 if (oldPegman) oldPegman.remove();
 
                 if (visitedCounties.has(name)) {
-                    circle.setAttribute('fill', '#FDE68A'); // Highlighted visited color
-                    circle.setAttribute('stroke', '#D97706');
+                    circle.setAttribute('fill', '#FDE68A');
+                    circle.setAttribute('stroke', '#B85B35');
 
-                    // Add Red Pegman Icon
                     const cx = parseFloat(circle.getAttribute('cx'));
                     const cy = parseFloat(circle.getAttribute('cy'));
                     
                     const pegman = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     pegman.setAttribute('x', cx + 8);
-                    pegman.setAttribute('y', cy - 6);
+                    pegman.setAttribute('y', cy - 5);
                     pegman.setAttribute('font-size', '14');
                     pegman.setAttribute('class', 'pegman-icon');
-                    pegman.textContent = '🧍‍♂️'; // Traveler Red Pegman Symbol
+                    pegman.textContent = '🧍‍♂️'; 
                     g.appendChild(pegman);
                 } else {
                     circle.setAttribute('fill', '#EFE9D7');
@@ -923,12 +1069,10 @@
                 }
             });
 
-            // Update footprint coverage %
             const coverage = Math.round((visitedCounties.size / totalCounties) * 100);
             document.getElementById('footprintCoverage').textContent = `足跡覆蓋率: ${coverage}% (${visitedCounties.size}/${totalCounties})`;
         }
 
-        // --- 9. Chart Analytics ---
         let transportChartInstance = null;
 
         function updateAnalytics() {
@@ -936,7 +1080,6 @@
             const totalCost = currentTrips.reduce((sum, t) => sum + (Number(t.cost) || 0), 0);
             document.getElementById('statTotalCost').textContent = `NT$ ${totalCost.toLocaleString()}`;
 
-            // Group by Mode
             const modeCounts = {};
             currentTrips.forEach(t => {
                 modeCounts[t.mode] = (modeCounts[t.mode] || 0) + 1;
@@ -955,7 +1098,7 @@
                     datasets: [{
                         data: data.length > 0 ? data : [1],
                         backgroundColor: [
-                            '#C5A059', '#D97706', '#059669', '#2563EB', '#7C3AED', '#DB2777'
+                            '#B85B35', '#C5A059', '#059669', '#2563EB', '#7C3AED', '#DB2777'
                         ]
                     }]
                 },
@@ -966,8 +1109,8 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                font: { size: 11, family: 'Inter' },
-                                color: '#3E3636'
+                                font: { size: 12, family: 'Inter' },
+                                color: '#3E2723'
                             }
                         }
                     }
@@ -975,7 +1118,67 @@
             });
         }
 
-        // --- 10. Excel Import & Export (SheetJS) ---
+        // --- 9. Page 4: Render Recommendations & Filters ---
+        function filterRecCategory(cat) {
+            currentRecCategory = cat;
+            document.querySelectorAll('.rec-filter-btn').forEach(btn => {
+                btn.className = 'rec-filter-btn px-3.5 py-1.5 rounded-full border border-cream-300 bg-cream-50 text-mocha-700 hover:bg-cream-100 text-xs font-semibold transition';
+            });
+            const activeBtn = document.getElementById(`filter-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = 'rec-filter-btn active px-3.5 py-1.5 rounded-full border border-mocha-700 bg-mocha-700 text-white text-xs font-bold transition';
+            }
+            renderRecommendations();
+        }
+
+        function renderRecommendations() {
+            const city = document.getElementById('recCitySelect').value;
+            const grid = document.getElementById('recommendationsGrid');
+            grid.innerHTML = '';
+
+            let list = recommendationsDb[city] || recommendationsDb['高雄'];
+
+            if (currentRecCategory !== 'ALL') {
+                list = list.filter(item => item.category === currentRecCategory);
+            }
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-mocha-500">該分類暫無推薦項目，請切換其他標籤。</div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'cream-card overflow-hidden flex flex-col hover:shadow-lg transition duration-300 group';
+                card.innerHTML = `
+                    <div class="relative h-44 overflow-hidden bg-cream-100">
+                        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/500x300/F2EFE9/3E2723?text=${encodeURIComponent(item.name)}'" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-3 left-3 bg-mocha-900/80 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
+                            ${item.tag}
+                        </span>
+                        <span class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-accent-amber font-bold text-xs px-2 py-0.5 rounded-md shadow">
+                            ⭐ ${item.rating}
+                        </span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-bold text-base text-mocha-700">${item.name}</h3>
+                                <span class="text-[10px] bg-cream-100 border border-cream-200 px-2 py-0.5 rounded font-bold text-mocha-500">${item.type}</span>
+                            </div>
+                            <p class="text-xs text-mocha-500 mt-2 leading-relaxed">${item.desc}</p>
+                        </div>
+
+                        <button onclick="addSelectedOptionToTrip('台北', '${city} (${item.name})', '高鐵/自由行', 1490, '包含景點美食特訪: ${item.name}')" class="w-full py-2 bg-cream-100 hover:bg-accent-amber hover:text-white border border-cream-300 text-mocha-700 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> 一鍵加入行程
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 10. Excel / PNG / PDF Export Handlers ---
         function exportToExcel() {
             if (currentTrips.length === 0) {
                 alert('目前無可匯出的行程資料！');
@@ -1032,7 +1235,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- 11. PNG & PDF Report Export ---
         function exportToPNG() {
             const element = document.getElementById('exportContainer');
             html2canvas(element, { scale: 2 }).then(canvas => {
@@ -1050,8 +1252,8 @@
             html2canvas(element, { scale: 1.5 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210; // A4 width mm
-                const pageHeight = 297; // A4 height mm
+                const imgWidth = 210;
+                const pageHeight = 297;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 let heightLeft = imgHeight;
                 let position = 0;
@@ -1066,16 +1268,42 @@
                     heightLeft -= pageHeight;
                 }
 
-                pdf.save('Taiwan_Travel_Itinerary_Report.pdf');
+                pdf.save('Taiwan_Travel_Report.pdf');
             });
+        }
+
+        // --- 11. Modal Handlers ---
+        function openAddTripModal() {
+            document.getElementById('addTripModal').classList.remove('hidden');
+            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeAddTripModal() {
+            document.getElementById('addTripModal').classList.add('hidden');
+        }
+
+        function saveCustomTrip(e) {
+            e.preventDefault();
+            const trip = {
+                date: document.getElementById('modalDate').value,
+                time: document.getElementById('modalTime').value,
+                origin: document.getElementById('modalOrigin').value,
+                dest: document.getElementById('modalDest').value,
+                mode: document.getElementById('modalMode').value,
+                cost: Number(document.getElementById('modalCost').value) || 0,
+                notes: document.getElementById('modalNotes').value
+            };
+            saveTripToFirebase(trip);
+            closeAddTripModal();
         }
 
         // --- 12. Lifecycle Window Load Init ---
         window.onload = function() {
             initLeafletMap();
             document.getElementById('tripDate').value = new Date().toISOString().split('T')[0];
-            calculateRoute(); // Initial calculation demo
+            calculateRoute();
             renderFootprintMap();
+            renderRecommendations();
         }
     </script>
 </body>
