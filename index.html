@@ -31,14 +31,14 @@
             }
           },
           fontSize: {
-            'xs': '1.125rem',  /* 12px * 1.5 = 18px -> ~1.125rem */
-            'sm': '1.3125rem', /* 14px * 1.5 = 21px -> ~1.3125rem */
-            'base': '1.5rem',   /* 16px * 1.5 = 24px -> 1.5rem */
-            'lg': '1.6875rem', /* 18px * 1.5 = 27px -> ~1.6875rem */
-            'xl': '1.875rem',  /* 20px * 1.5 = 30px -> ~1.875rem */
-            '2xl': '2.25rem',  /* 24px * 1.5 = 36px -> 2.25rem */
-            '3xl': '2.8125rem',/* 30px * 1.5 = 45px -> ~2.8125rem */
-            '4xl': '3.375rem'  /* 36px * 1.5 = 54px -> 3.375rem */
+            'xs': '1.125rem',  /* 18px */
+            'sm': '1.3125rem', /* 21px */
+            'base': '1.5rem',   /* 24px */
+            'lg': '1.6875rem', /* 27px */
+            'xl': '1.875rem',  /* 30px */
+            '2xl': '2.25rem',  /* 36px */
+            '3xl': '2.8125rem',/* 45px */
+            '4xl': '3.375rem'  /* 54px */
           }
         }
       }
@@ -55,7 +55,7 @@
       background-color: #FAF8F5;
       color: #2C2221;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-size: 1.5rem; /* Base font size 1.5x (~24px) */
+      font-size: 1.5rem;
       line-height: 1.6;
     }
     .custom-scroll::-webkit-scrollbar {
@@ -87,7 +87,6 @@
       color: #C5A059;
       font-weight: 700;
     }
-    /* Printable & Canvas styles */
     @media print {
       .no-print { display: none !important; }
       .print-only { display: block !important; }
@@ -198,50 +197,61 @@
 
     <!-- PAGE 1: 行程路線規劃 -->
     <section id="page-route" class="page-content space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[750px]">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Controls Column -->
         <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-cream-200 shadow-sm space-y-6 flex flex-col">
           <div class="border-b border-cream-100 pb-4">
             <h2 class="text-2xl font-bold text-mocha flex items-center gap-2">
               <i class="fa-solid fa-sliders text-gold"></i> 行程規劃與即時試算
             </h2>
-            <p class="text-sm text-gray-500 mt-1">輸入任意台灣地點，試算多模態交通工具與花費</p>
+            <p class="text-sm text-gray-500 mt-1">支援任意地點、自家點與我的最愛快捷填寫</p>
           </div>
 
           <form id="routeForm" class="space-y-4 flex-grow">
-            <!-- Free Text Origin Input -->
+            <!-- Origin Input -->
             <div>
-              <label class="block text-sm font-semibold text-mocha mb-1">
-                <i class="fa-solid fa-circle-dot text-emerald-600 mr-1"></i> 出發地 (任意地點/地址/地標)
-              </label>
-              <div class="relative">
-                <input type="text" id="originInput" list="originSuggestions" placeholder="例如：台北車站、新竹科學園區..." required 
-                       class="w-full p-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-gold outline-none bg-cream-50 text-base">
-                <datalist id="originSuggestions">
-                  <option value="基隆市"><option value="台北市"><option value="新北市"><option value="桃園市"><option value="新竹市">
-                  <option value="新竹縣"><option value="苗栗縣"><option value="台中市"><option value="彰化縣"><option value="南投縣">
-                  <option value="雲林縣"><option value="嘉義市"><option value="嘉義縣"><option value="台南市"><option value="高雄市">
-                  <option value="屏東縣"><option value="宜蘭縣"><option value="花蓮縣"><option value="台東縣">
-                </datalist>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-sm font-semibold text-mocha">
+                  <i class="fa-solid fa-circle-dot text-emerald-600 mr-1"></i> 出發地
+                </label>
+                <div class="flex gap-2 text-xs">
+                  <button type="button" id="btnFillOriginHome" class="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded font-bold border border-amber-200">
+                    <i class="fa-solid fa-house"></i> 自家點
+                  </button>
+                  <select id="selectOriginFav" class="text-xs bg-cream-50 border border-cream-300 rounded px-1 py-1 text-mocha font-semibold">
+                    <option value="">⭐ 我的最愛...</option>
+                  </select>
+                </div>
               </div>
+              <input type="text" id="originInput" list="locationSuggestions" placeholder="輸入任意地點或選擇快捷..." required 
+                     class="w-full p-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-gold outline-none bg-cream-50 text-base">
             </div>
 
-            <!-- Free Text Destination Input -->
+            <!-- Destination Input -->
             <div>
-              <label class="block text-sm font-semibold text-mocha mb-1">
-                <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> 目的地 (任意地點/地址/地標)
-              </label>
-              <div class="relative">
-                <input type="text" id="destinationInput" list="destSuggestions" placeholder="例如：高雄85大樓、台中逢甲夜市..." required 
-                       class="w-full p-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-gold outline-none bg-cream-50 text-base">
-                <datalist id="destSuggestions">
-                  <option value="基隆市"><option value="台北市"><option value="新北市"><option value="桃園市"><option value="新竹市">
-                  <option value="新竹縣"><option value="苗栗縣"><option value="台中市"><option value="彰化縣"><option value="南投縣">
-                  <option value="雲林縣"><option value="嘉義市"><option value="嘉義縣"><option value="台南市"><option value="高雄市">
-                  <option value="屏東縣"><option value="宜蘭縣"><option value="花蓮縣"><option value="台東縣">
-                </datalist>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-sm font-semibold text-mocha">
+                  <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> 目的地
+                </label>
+                <div class="flex gap-2 text-xs">
+                  <button type="button" id="btnFillDestHome" class="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded font-bold border border-amber-200">
+                    <i class="fa-solid fa-house"></i> 自家點
+                  </button>
+                  <select id="selectDestFav" class="text-xs bg-cream-50 border border-cream-300 rounded px-1 py-1 text-mocha font-semibold">
+                    <option value="">⭐ 我的最愛...</option>
+                  </select>
+                </div>
               </div>
+              <input type="text" id="destinationInput" list="locationSuggestions" placeholder="輸入任意地點或選擇快捷..." required 
+                     class="w-full p-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-gold outline-none bg-cream-50 text-base">
             </div>
+
+            <datalist id="locationSuggestions">
+              <option value="基隆市"><option value="台北市"><option value="新北市"><option value="桃園市"><option value="新竹市">
+              <option value="新竹縣"><option value="苗栗縣"><option value="台中市"><option value="彰化縣"><option value="南投縣">
+              <option value="雲林縣"><option value="嘉義市"><option value="嘉義縣"><option value="台南市"><option value="高雄市">
+              <option value="屏東縣"><option value="宜蘭縣"><option value="花蓮縣"><option value="台東縣">
+            </datalist>
 
             <div>
               <label class="block text-sm font-semibold text-mocha mb-1">預計出發日期</label>
@@ -257,19 +267,55 @@
               <i class="fa-solid fa-magnifying-glass-location"></i> 開始搜尋與計算路線
             </button>
           </form>
+
+          <!-- NEW: My Favorites & Home Management Panel -->
+          <div class="border-t border-cream-200 pt-4 space-y-3">
+            <h3 class="text-lg font-bold text-mocha flex items-center justify-between">
+              <span><i class="fa-solid fa-bookmark text-gold mr-1"></i> 常用地點設定</span>
+            </h3>
+
+            <!-- Home Location Setting -->
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-2">
+              <span class="text-xs font-bold text-amber-800 flex items-center gap-1">
+                <i class="fa-solid fa-house"></i> 自家點 (Home)
+              </span>
+              <div class="flex gap-2">
+                <input type="text" id="homeLocationInput" placeholder="設定自家地址..." class="flex-grow p-2 border border-amber-300 rounded-lg text-sm bg-white">
+                <button id="btnSaveHome" class="bg-amber-700 hover:bg-amber-800 text-white text-xs px-3 py-2 rounded-lg font-bold whitespace-nowrap">
+                  儲存
+                </button>
+              </div>
+            </div>
+
+            <!-- Add Favorites -->
+            <div class="bg-cream-50 p-3 rounded-xl border border-cream-200 space-y-2">
+              <span class="text-xs font-bold text-mocha flex items-center gap-1">
+                <i class="fa-solid fa-star text-gold"></i> 新增「我的最愛」地點
+              </span>
+              <div class="flex gap-2">
+                <input type="text" id="addFavInput" placeholder="例如：公司、合興車站..." class="flex-grow p-2 border border-cream-300 rounded-lg text-sm bg-white">
+                <button id="btnAddFav" class="bg-mocha hover:bg-mocha-dark text-white text-xs px-3 py-2 rounded-lg font-bold whitespace-nowrap">
+                  新增
+                </button>
+              </div>
+              <div id="favTagsContainer" class="flex flex-wrap gap-2 pt-1 max-h-[120px] overflow-y-auto custom-scroll">
+                <!-- Dynamic Favorite Tags -->
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Map & Options Column -->
+        <!-- Map & Driving Directions Column -->
         <div class="lg:col-span-8 space-y-6 flex flex-col">
           <!-- Leaflet Map Container -->
-          <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm h-[450px] relative">
+          <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm h-[480px] relative">
             <div id="leafletMap" class="w-full h-full rounded-xl z-10"></div>
           </div>
 
           <!-- Transport Modes Comparison Cards -->
-          <div class="bg-white p-6 rounded-2xl border border-cream-200 shadow-sm flex-grow">
+          <div class="bg-white p-6 rounded-2xl border border-cream-200 shadow-sm">
             <h3 class="text-xl font-bold text-mocha mb-4 flex items-center justify-between">
-              <span><i class="fa-solid fa-code-compare text-gold mr-2"></i>多模態交通時間與費用預估比較</span>
+              <span><i class="fa-solid fa-code-compare text-gold mr-2"></i>各式交通工具時間與費用預估</span>
               <span id="distDisplay" class="text-sm text-gray-500 font-normal">請先選擇地點進行計算</span>
             </h3>
 
@@ -279,11 +325,28 @@
               </div>
             </div>
           </div>
+
+          <!-- Driving Directions & Key Road Segments Card -->
+          <div id="drivingNavCard" class="bg-white p-6 rounded-2xl border border-cream-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-cream-100 pb-3">
+              <h3 class="text-xl font-bold text-mocha flex items-center gap-2">
+                <i class="fa-solid fa-diamond-turn-right text-blue-600"></i> 開車實時導航指引與關鍵路段 (Driving Route & Key Roads)
+              </h3>
+              <span id="navTotalSummary" class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                請先搜尋路線
+              </span>
+            </div>
+
+            <div id="drivingStepsList" class="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scroll text-base">
+              <p class="text-gray-400 text-center py-4">進行路線規劃後，此處將詳細列出開車行經的國道、高架道與轉彎步驟。</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <!-- PAGE 2: 景點與美食推薦 (NEW) -->
+    <!-- PAGE 2: 景點與美食推薦 -->
     <section id="page-attractions" class="page-content space-y-6 hidden">
       <div class="bg-white p-6 rounded-2xl border border-cream-200 shadow-sm space-y-6">
         <div class="flex flex-wrap justify-between items-center gap-4 border-b border-cream-100 pb-4">
@@ -302,7 +365,7 @@
         </div>
 
         <div id="attractionsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Dynamic Content Inserted Here -->
+          <!-- Dynamic Content -->
         </div>
       </div>
     </section>
@@ -330,16 +393,15 @@
           </div>
         </div>
 
-        <!-- Interactive SVG Taiwan Map -->
+        <!-- SVG Map Container -->
         <div class="flex justify-center items-center py-6 relative bg-cream-50 rounded-2xl border border-cream-100 min-h-[600px]">
           <svg id="taiwanSvg" viewBox="0 0 500 650" class="w-full max-w-2xl h-auto drop-shadow-md">
-            <!-- Simplified interactive path approximations of Taiwan Counties -->
             <path id="tw-kl" data-name="基隆市" class="county-path" d="M 370 70 L 385 65 L 390 75 L 375 80 Z" />
             <path id="tw-tpe" data-name="台北市" class="county-path" d="M 345 75 L 370 70 L 375 90 L 350 95 Z" />
             <path id="tw-nwt" data-name="新北市" class="county-path" d="M 325 60 L 385 45 L 410 85 L 370 120 L 330 90 Z" />
             <path id="tw-tyu" data-name="桃園市" class="county-path" d="M 300 80 L 335 75 L 340 115 L 305 125 Z" />
             <path id="tw-hsc" data-name="新竹市/縣" class="county-path" d="M 275 110 L 315 110 L 325 150 L 285 140 Z" />
-            <path id="tw-[#tw-mia]" data-name="苗栗縣" class="county-path" d="M 250 140 L 295 140 L 305 185 L 260 175 Z" />
+            <path id="tw-mia" data-name="苗栗縣" class="county-path" d="M 250 140 L 295 140 L 305 185 L 260 175 Z" />
             <path id="tw-txg" data-name="台中市" class="county-path" d="M 230 175 L 285 175 L 310 220 L 240 225 Z" />
             <path id="tw-chw" data-name="彰化縣" class="county-path" d="M 205 210 L 245 210 L 240 255 L 200 245 Z" />
             <path id="tw-nto" data-name="南投縣" class="county-path" d="M 245 220 L 315 215 L 310 305 L 245 290 Z" />
@@ -347,13 +409,11 @@
             <path id="tw-chi" data-name="嘉義市/縣" class="county-path" d="M 175 285 L 235 285 L 240 335 L 170 325 Z" />
             <path id="tw-tnn" data-name="台南市" class="county-path" d="M 160 325 L 225 330 L 215 390 L 155 375 Z" />
             <path id="tw-khh" data-name="高雄市" class="county-path" d="M 170 380 L 240 345 L 260 425 L 190 445 Z" />
-            <path id="tw-[#tw-[#tw-pth]]" data-name="屏東縣" class="county-path" d="M 195 445 L 255 425 L 240 550 L 205 540 Z" />
+            <path id="tw-pth" data-name="屏東縣" class="county-path" d="M 195 445 L 255 425 L 240 550 L 205 540 Z" />
             <path id="tw-ila" data-name="宜蘭縣" class="county-path" d="M 355 115 L 405 110 L 385 190 L 345 155 Z" />
             <path id="tw-hun" data-name="花蓮縣" class="county-path" d="M 315 190 L 380 190 L 340 370 L 295 320 Z" />
             <path id="tw-ttt" data-name="台東縣" class="county-path" d="M 270 330 L 335 365 L 280 500 L 245 440 Z" />
           </svg>
-
-          <!-- Red Pegman Overlay Icons will be generated by JS -->
           <div id="pegmanContainer" class="absolute inset-0 pointer-events-none"></div>
         </div>
       </div>
@@ -384,7 +444,6 @@
           </div>
         </div>
 
-        <!-- Charts Container Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 min-h-[450px]">
           <div class="bg-cream-50 p-6 rounded-2xl border border-cream-200 flex flex-col items-center">
             <h3 class="text-lg font-bold text-mocha mb-4">交通工具選擇偏好分析</h3>
@@ -413,7 +472,6 @@
             <p class="text-sm text-gray-500 mt-1">提供 EXCEL 雙向匯入匯出，以及高解析度 PNG / PDF 報告產生器</p>
           </div>
 
-          <!-- Action Buttons -->
           <div class="flex flex-wrap gap-3">
             <label class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-bold transition-all text-sm cursor-pointer shadow-sm flex items-center gap-2">
               <i class="fa-solid fa-file-import"></i> EXCEL 一鍵匯入
@@ -431,7 +489,6 @@
           </div>
         </div>
 
-        <!-- Saved Trips Data Table -->
         <div class="overflow-x-auto rounded-xl border border-cream-200">
           <table class="w-full text-left border-collapse">
             <thead>
@@ -458,7 +515,7 @@
 
   </main>
 
-  <!-- FOOTER (FULL WIDTH) -->
+  <!-- FOOTER -->
   <footer class="bg-white border-t border-cream-200 py-6 text-center text-sm text-gray-500 w-full mt-auto">
     <div class="w-full px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
       <p>© 台灣旅行地圖導覽系統 - Warm Cream Corporate Edition</p>
@@ -468,7 +525,7 @@
     </div>
   </footer>
 
-  <!-- MAIN SCRIPT WITH FIREBASE & APPLICATION LOGIC -->
+  <!-- MAIN SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -485,21 +542,21 @@
       measurementId: "G-Z6MJTWM8X2"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Global App State
+    // Global State
     let currentUser = null;
     let map = null;
     let routeLayer = null;
     let tripsData = [];
+    let homeLocation = '';
+    let favoriteLocations = [];
     let visitedCounties = new Set();
     let chartModeInstance = null;
     let chartDestInstance = null;
 
-    // Preset Attractions Database
     const presetAttractions = {
       "台北市": [
         { name: "台北101觀景台", type: "景點", desc: "台灣地標建築，俯瞰台北全景", rating: "4.7" },
@@ -530,7 +587,7 @@
     const btnLogout = document.getElementById('btnLogout');
     const lastSaveTime = document.getElementById('lastSaveTime');
 
-    // Tab Navigation Logic
+    // Tab Navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -541,13 +598,12 @@
         const targetId = targetBtn.getAttribute('data-target');
         document.getElementById(targetId).classList.remove('hidden');
 
-        // Refresh charts or map when entering tabs
         if (targetId === 'page-route' && map) setTimeout(() => map.invalidateSize(), 200);
         if (targetId === 'page-analytics') renderCharts();
       });
     });
 
-    // --- Authentication ---
+    // Authentication
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
@@ -593,9 +649,11 @@
 
     btnLogout.addEventListener('click', () => signOut(auth));
 
-    // --- Database Realtime Sync ---
+    // Database Sync
     function listenToDatabase() {
       if (!currentUser) return;
+      
+      // Sync Trips
       const userTripsRef = ref(db, `users/${currentUser.uid}/trips`);
       onValue(userTripsRef, (snapshot) => {
         const data = snapshot.val();
@@ -608,6 +666,17 @@
         updateTable();
         updateVisitedFromTrips();
         updateSaveTimestamp();
+      });
+
+      // Sync User Places (Home & Favorites)
+      const userPlacesRef = ref(db, `users/${currentUser.uid}/places`);
+      onValue(userPlacesRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          homeLocation = data.home || '';
+          favoriteLocations = data.favorites || [];
+        }
+        renderPlacesUI();
       });
     }
 
@@ -623,12 +692,84 @@
       remove(itemRef);
     }
 
+    function savePlacesToDB() {
+      if (!currentUser) return;
+      const userPlacesRef = ref(db, `users/${currentUser.uid}/places`);
+      set(userPlacesRef, {
+        home: homeLocation,
+        favorites: favoriteLocations
+      });
+    }
+
     function updateSaveTimestamp() {
       const now = new Date();
       lastSaveTime.textContent = now.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
 
-    // --- Leaflet Map Setup ---
+    // Home & Favorites UI Handling
+    function renderPlacesUI() {
+      document.getElementById('homeLocationInput').value = homeLocation;
+
+      // Update dropdowns
+      const origFavSel = document.getElementById('selectOriginFav');
+      const destFavSel = document.getElementById('selectDestFav');
+      const tagsContainer = document.getElementById('favTagsContainer');
+
+      origFavSel.innerHTML = '<option value="">⭐ 我的最愛...</option>';
+      destFavSel.innerHTML = '<option value="">⭐ 我的最愛...</option>';
+      tagsContainer.innerHTML = '';
+
+      favoriteLocations.forEach(fav => {
+        origFavSel.innerHTML += `<option value="${fav}">${fav}</option>`;
+        destFavSel.innerHTML += `<option value="${fav}">${fav}</option>`;
+
+        const tag = document.createElement('span');
+        tag.className = "inline-flex items-center gap-1 bg-white border border-cream-300 px-2 py-1 rounded text-xs font-semibold text-mocha";
+        tag.innerHTML = `⭐ ${fav} <i class="fa-solid fa-xmark text-red-400 hover:text-red-600 cursor-pointer ml-1"></i>`;
+        tag.querySelector('i').addEventListener('click', () => {
+          favoriteLocations = favoriteLocations.filter(f => f !== fav);
+          savePlacesToDB();
+        });
+        tagsContainer.appendChild(tag);
+      });
+    }
+
+    document.getElementById('btnSaveHome').addEventListener('click', () => {
+      homeLocation = document.getElementById('homeLocationInput').value.trim();
+      savePlacesToDB();
+      alert('已成功儲存自家點！');
+    });
+
+    document.getElementById('btnAddFav').addEventListener('click', () => {
+      const val = document.getElementById('addFavInput').value.trim();
+      if (!val) return;
+      if (!favoriteLocations.includes(val)) {
+        favoriteLocations.push(val);
+        savePlacesToDB();
+        document.getElementById('addFavInput').value = '';
+      }
+    });
+
+    // Quick fill handlers
+    document.getElementById('btnFillOriginHome').addEventListener('click', () => {
+      if (!homeLocation) return alert('請先設定您的自家點！');
+      document.getElementById('originInput').value = homeLocation;
+    });
+
+    document.getElementById('btnFillDestHome').addEventListener('click', () => {
+      if (!homeLocation) return alert('請先設定您的自家點！');
+      document.getElementById('destinationInput').value = homeLocation;
+    });
+
+    document.getElementById('selectOriginFav').addEventListener('change', (e) => {
+      if (e.target.value) document.getElementById('originInput').value = e.target.value;
+    });
+
+    document.getElementById('selectDestFav').addEventListener('change', (e) => {
+      if (e.target.value) document.getElementById('destinationInput').value = e.target.value;
+    });
+
+    // Leaflet Map Setup
     function initMap() {
       map = L.map('leafletMap').setView([23.7, 121.0], 7);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -637,9 +778,8 @@
     }
     initMap();
 
-    // Geocoding Helper (Nominatim OpenStreetMap)
+    // Geocoding Helper
     async function geocode(locationName) {
-      // Fallback coordinate map for major counties
       const presetCoords = {
         "基隆市": [25.128, 121.741], "台北市": [25.033, 121.565], "新北市": [24.998, 121.500],
         "桃園市": [24.993, 121.301], "新竹市": [24.813, 120.967], "新竹縣": [24.838, 121.017],
@@ -659,12 +799,108 @@
           return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
         }
       } catch (e) {
-        console.warn("Geocoding failed, fallback to default", e);
+        console.warn("Geocoding fallback", e);
       }
       return [23.7, 121.0];
     }
 
-    // --- Multimodal Route Calculation ---
+    // OSRM Realtime Driving Directions Fetcher
+    async function fetchDrivingRoute(originCoords, destCoords, originName, destName) {
+      const navList = document.getElementById('drivingStepsList');
+      const navSummary = document.getElementById('navTotalSummary');
+
+      navList.innerHTML = '<div class="text-center py-4 text-gray-400"><i class="fa-solid fa-spinner animate-spin mr-2"></i> 正在獲取 OSRM 開車導航數據...</div>';
+
+      try {
+        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originCoords[1]},${originCoords[0]};${destCoords[1]},${destCoords[0]}?overview=full&steps=true&geometries=geojson`;
+        const res = await fetch(osrmUrl);
+        const data = await res.json();
+
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          const distKm = (route.distance / 1000).toFixed(1);
+          const durationMin = Math.round(route.duration / 60);
+
+          navSummary.textContent = `開車總長: ${distKm} 公里 | 預估時間: ${durationMin} 分鐘`;
+
+          if (routeLayer) map.removeLayer(routeLayer);
+          
+          const latLngs = route.geometry.coordinates.map(c => [c[1], c[0]]);
+          routeLayer = L.layerGroup([
+            L.polyline(latLngs, { color: '#2563EB', weight: 6, opacity: 0.8 }).addTo(map),
+            L.marker(originCoords).bindPopup(`<b>出發點:</b> ${originName}`),
+            L.marker(destCoords).bindPopup(`<b>終點:</b> ${destName}`)
+          ]).addTo(map);
+
+          map.fitBounds(L.polyline(latLngs).getBounds(), { padding: [50, 50] });
+
+          navList.innerHTML = '';
+          const steps = route.legs[0].steps;
+
+          steps.forEach((step, index) => {
+            const stepDist = (step.distance / 1000).toFixed(2);
+            const roadName = step.name ? step.name : '周邊連接道路/聯絡道';
+            const modifier = step.maneuver.modifier || '';
+            const type = step.maneuver.type || '';
+
+            let iconClass = 'fa-arrow-up text-emerald-600';
+            if (modifier.includes('right')) iconClass = 'fa-arrow-right text-blue-600';
+            if (modifier.includes('left')) iconClass = 'fa-arrow-left text-blue-600';
+            if (type.includes('motorway') || roadName.includes('國道') || roadName.includes('快速道路')) iconClass = 'fa-road text-amber-600';
+
+            const item = document.createElement('div');
+            item.className = "p-3 bg-cream-50 hover:bg-cream-100 rounded-xl border border-cream-200 flex items-center justify-between transition-all";
+            item.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-white border border-cream-300 flex items-center justify-center text-sm font-bold text-gray-600">${index + 1}</span>
+                <i class="fa-solid ${iconClass} text-lg"></i>
+                <div>
+                  <p class="font-bold text-mocha">${roadName}</p>
+                  <p class="text-xs text-gray-500">${type} ${modifier ? `(${modifier})` : ''}</p>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-gray-700">${stepDist} km</span>
+            `;
+            navList.appendChild(item);
+          });
+        }
+      } catch (err) {
+        console.warn("OSRM error, falling back to simulated steps", err);
+        renderSimulatedSteps(originName, destName, originCoords, destCoords);
+      }
+    }
+
+    function renderSimulatedSteps(origin, dest, originCoords, destCoords) {
+      const navList = document.getElementById('drivingStepsList');
+      const navSummary = document.getElementById('navTotalSummary');
+      const dist = calculateDistance(originCoords[0], originCoords[1], destCoords[0], destCoords[1]);
+      
+      navSummary.textContent = `預估直線長度: ${dist.toFixed(1)} km`;
+      
+      const simulatedSteps = [
+        { name: `從 ${origin} 出發，駛入周邊聯絡道路`, dist: "1.2 km", icon: "fa-location-arrow text-emerald-600" },
+        { name: "匯入 國道一號 (中山高速公路) / 國道三號 幹線主線", dist: `${(dist * 0.7).toFixed(1)} km`, icon: "fa-road text-amber-600" },
+        { name: "靠右駛出 交流道出口，朝目的地交流道方向行駛", dist: "2.5 km", icon: "fa-arrow-right text-blue-600" },
+        { name: `銜接市區主要幹道，直行抵達 ${dest}`, dist: "1.8 km", icon: "fa-flag-checkered text-red-600" }
+      ];
+
+      navList.innerHTML = '';
+      simulatedSteps.forEach((s, idx) => {
+        const item = document.createElement('div');
+        item.className = "p-3 bg-cream-50 rounded-xl border border-cream-200 flex items-center justify-between";
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white border border-cream-300 flex items-center justify-center text-sm font-bold text-gray-600">${idx + 1}</span>
+            <i class="fa-solid ${s.icon} text-lg"></i>
+            <span class="font-bold text-mocha">${s.name}</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-700">${s.dist}</span>
+        `;
+        navList.appendChild(item);
+      });
+    }
+
+    // Multimodal Route Form Submit
     document.getElementById('routeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const origin = document.getElementById('originInput').value.trim();
@@ -677,22 +913,11 @@
       const originCoords = await geocode(origin);
       const destCoords = await geocode(dest);
 
-      // Draw map route
-      if (routeLayer) map.removeLayer(routeLayer);
-      map.fitBounds([originCoords, destCoords], { padding: [50, 50] });
-
-      routeLayer = L.layerGroup([
-        L.marker(originCoords).bindPopup(`<b>出發地:</b> ${origin}`).openPopup(),
-        L.marker(destCoords).bindPopup(`<b>目的地:</b> ${dest}`),
-        L.polyline([originCoords, destCoords], { color: '#C5A059', weight: 4, dashArray: '8, 8' })
-      ]).addTo(map);
-
-      // Calculate straight-line distance (km)
       const dist = calculateDistance(originCoords[0], originCoords[1], destCoords[0], destCoords[1]);
       document.getElementById('distDisplay').textContent = `估計直線距離: 約 ${dist.toFixed(1)} 公里`;
 
-      // Generate Transport Cards & Options
       renderTransportOptions(origin, dest, date, notes, dist);
+      fetchDrivingRoute(originCoords, destCoords, origin, dest);
     });
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -726,7 +951,7 @@
         const cost = Math.max(30, Math.round(dist * m.costPerKm));
 
         const card = document.createElement('div');
-        card.className = "p-5 bg-cream-50 hover:bg-white border border-cream-200 rounded-xl transition-all shadow-sm hover:shadow-md space-y-3";
+        card.className = "p-5 bg-cream-50 hover:bg-white border border-cream-200 rounded-xl transition-all shadow-sm space-y-3";
         card.innerHTML = `
           <div class="flex items-center justify-between text-mocha">
             <span class="font-bold text-lg flex items-center gap-2">
@@ -738,19 +963,13 @@
             <p><i class="fa-solid fa-coins mr-1"></i> 預估費用: <span class="font-bold text-gold">$${cost} TWD</span></p>
           </div>
           <button class="w-full mt-2 bg-mocha hover:bg-mocha-dark text-white text-sm py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1">
-            <i class="fa-solid fa-plus"></i> 選擇此方案並儲存
+            <i class="fa-solid fa-plus"></i> 儲存此交通方案
           </button>
         `;
 
         card.querySelector('button').addEventListener('click', () => {
           saveTripToDB({
-            date,
-            origin,
-            dest,
-            mode: m.name,
-            duration: timeStr,
-            cost: cost,
-            notes: notes || '無'
+            date, origin, dest, mode: m.name, duration: timeStr, cost: cost, notes: notes || '無'
           });
           alert(`已儲存【${m.name}】方案至您的旅途行程中！`);
         });
@@ -758,16 +977,14 @@
         container.appendChild(card);
       });
 
-      // Automatically search attractions for destination
       renderAttractions(dest);
     }
 
-    // --- Page 2: Attractions Logic ---
+    // Page 2: Attractions Logic
     function renderAttractions(destQuery) {
       const container = document.getElementById('attractionsContainer');
       container.innerHTML = '';
 
-      // Find matching preset key or fallback
       let matchedKey = Object.keys(presetAttractions).find(k => destQuery.includes(k) || k.includes(destQuery));
       let items = matchedKey ? presetAttractions[matchedKey] : [
         { name: `${destQuery}在地熱門美食`, type: "美食", desc: "探訪當地隱藏版美味與傳統小吃", rating: "4.5" },
@@ -792,7 +1009,7 @@
 
         card.querySelector('button').addEventListener('click', () => {
           document.getElementById('destinationInput').value = item.name;
-          document.querySelectorAll('.tab-btn')[0].click(); // Switch to route tab
+          document.querySelectorAll('.tab-btn')[0].click();
         });
 
         container.appendChild(card);
@@ -804,7 +1021,7 @@
       if (q) renderAttractions(q);
     });
 
-    // --- Page 3: Taiwan Interactive SVG Map (Red Pegman) ---
+    // Page 3: Taiwan Interactive Map (Red Pegman)
     document.querySelectorAll('.county-path').forEach(path => {
       path.addEventListener('click', (e) => {
         const name = e.currentTarget.getAttribute('data-name');
@@ -840,7 +1057,6 @@
       document.getElementById('visitedCount').textContent = `${count} / ${total}`;
       document.getElementById('visitedPercent').textContent = `${percent}%`;
 
-      // Render Red Pegman icons over SVGs
       const container = document.getElementById('pegmanContainer');
       container.innerHTML = '';
       
@@ -855,7 +1071,7 @@
       });
     }
 
-    // --- Page 4: Analytics Charts ---
+    // Page 4: Analytics
     function renderCharts() {
       const totalTrips = tripsData.length;
       const totalCost = tripsData.reduce((sum, t) => sum + Number(t.cost || 0), 0);
@@ -881,7 +1097,6 @@
       document.getElementById('statTotalCost').textContent = `$${totalCost.toLocaleString()} TWD`;
       document.getElementById('statTopMode').textContent = topMode;
 
-      // Mode Pie Chart
       const modeCtx = document.getElementById('chartMode').getContext('2d');
       if (chartModeInstance) chartModeInstance.destroy();
       chartModeInstance = new Chart(modeCtx, {
@@ -896,7 +1111,6 @@
         options: { responsive: true, maintainAspectRatio: false }
       });
 
-      // Destination Bar Chart
       const destCtx = document.getElementById('chartDest').getContext('2d');
       if (chartDestInstance) chartDestInstance.destroy();
       chartDestInstance = new Chart(destCtx, {
@@ -913,7 +1127,7 @@
       });
     }
 
-    // --- Page 5: Table & Excel / Image Export ---
+    // Page 5: Data Management
     function updateTable() {
       const tbody = document.getElementById('tripsTableBody');
       tbody.innerHTML = '';
@@ -955,13 +1169,8 @@
     document.getElementById('btnExportExcel').addEventListener('click', () => {
       if (tripsData.length === 0) return alert('目前無行程數據可供匯出！');
       const wsData = tripsData.map(t => ({
-        '日期': t.date,
-        '出發地': t.origin,
-        '目的地': t.dest,
-        '交通工具': t.mode,
-        '預估時間': t.duration,
-        '預估費用(TWD)': t.cost,
-        '備註': t.notes
+        '日期': t.date, '出發地': t.origin, '目的地': t.dest,
+        '交通工具': t.mode, '預估時間': t.duration, '預估費用(TWD)': t.cost, '備註': t.notes
       }));
       const ws = XLSX.utils.json_to_sheet(wsData);
       const wb = XLSX.utils.book_new();
@@ -1022,7 +1231,7 @@
       });
     });
 
-    // Initial Attractions Setup
+    // Initial setup
     renderAttractions('台北市');
 
   </script>
