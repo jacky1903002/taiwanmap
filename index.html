@@ -558,15 +558,20 @@
             '中華路4段64巷2號': [24.7891, 120.9324],
             '新竹市中華路四段': [24.7891, 120.9324],
             '新竹市中華路4段': [24.7891, 120.9324],
+            '新竹市中華路': [24.7950, 120.9500],
+            '新竹中華路': [24.7950, 120.9500],
+            '新竹': [24.8015, 120.9716],
             '裕元花園酒店': [24.1812, 120.6186],
             '台中裕元花園酒店': [24.1812, 120.6186],
+            '裕元酒店': [24.1812, 120.6186],
+            '台中': [24.1368, 120.6850],
+            '台中市': [24.1368, 120.6850],
             '台北車站': [25.0478, 121.5170],
             '台北市': [25.0478, 121.5170],
             '新北市': [25.0139, 121.4637],
             '桃園市': [25.0172, 121.2154],
             '新竹市': [24.8015, 120.9716],
             '苗栗縣': [24.5700, 120.8220],
-            '台中市': [24.1368, 120.6850],
             '彰化縣': [24.0815, 120.5384],
             '南投縣': [23.9037, 120.6859],
             '雲林縣': [23.7092, 120.4313],
@@ -612,24 +617,42 @@
             }
         }
 
-        // --- 3. Enhanced Geocoding Engine ---
+        // --- 3. Enhanced Geocoding Engine (Smart City & Landmark Fallback) ---
         function sanitizeSearchQuery(rawQuery) {
-            if (!rawQuery) return '';
+            if (!rawQuery) return { cleanedQuery: '' };
             let q = rawQuery.trim();
 
-            // Check landmark map first
+            // Direct check in landmark dictionary
             for (let key in landmarkCoordsMap) {
                 if (q.includes(key) || key.includes(q)) {
                     return { predefined: landmarkCoordsMap[key], displayName: key };
                 }
             }
 
-            // Remove floor details like 5樓之1, 5F, 12樓
+            // Clean address string: strip floor details like 5樓之1, 5F, etc.
             let cleaned = q.replace(/[0-9Ff一二三四五六七八九十]+樓(之[0-9一二三四五六七八九十]+)?/g, '')
                            .replace(/[\(（].*?[\)）]/g, '')
                            .trim();
 
             return { cleanedQuery: cleaned };
+        }
+
+        // Helper to infer Taiwan city coordinates from query string to avoid Nantou fallback
+        function detectTaiwanCityFallback(queryText) {
+            if (queryText.includes('新竹')) return { lat: 24.7891, lon: 120.9324, name: '新竹市' };
+            if (queryText.includes('台中') || queryText.includes('裕元')) return { lat: 24.1812, lon: 120.6186, name: '台中市' };
+            if (queryText.includes('台北')) return { lat: 25.0478, lon: 121.5170, name: '台北市' };
+            if (queryText.includes('新北')) return { lat: 25.0139, lon: 121.4637, name: '新北市' };
+            if (queryText.includes('桃園')) return { lat: 25.0172, lon: 121.2154, name: '桃園市' };
+            if (queryText.includes('高雄')) return { lat: 22.6874, lon: 120.3060, name: '高雄市' };
+            if (queryText.includes('台南')) return { lat: 22.9971, lon: 120.2126, name: '台南市' };
+            if (queryText.includes('苗栗')) return { lat: 24.5700, lon: 120.8220, name: '苗栗縣' };
+            if (queryText.includes('彰化')) return { lat: 24.0815, lon: 120.5384, name: '彰化縣' };
+            if (queryText.includes('花蓮')) return { lat: 23.9933, lon: 121.6012, name: '花蓮縣' };
+            if (queryText.includes('宜蘭')) return { lat: 24.6760, lon: 121.7670, name: '宜蘭縣' };
+
+            // Default fallback centered in Taichung/Hsinchu corridor if unrecognized
+            return null;
         }
 
         async function fetchGeocode(queryText) {
@@ -640,24 +663,25 @@
 
             const searchKey = prep.cleanedQuery || queryText;
 
-            // Try 1: Exact Query + Taiwan
+            // Try 1: Exact Query + Taiwan with Nominatim
             try {
                 const url1 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchKey + ' 台灣')}&limit=1`;
                 const res1 = await fetch(url1);
                 const data1 = await res1.json();
 
                 if (data1 && data1.length > 0) {
-                    return {
-                        lat: parseFloat(data1[0].lat),
-                        lon: parseFloat(data1[0].lon),
-                        name: data1[0].display_name
-                    };
+                    const lat = parseFloat(data1[0].lat);
+                    const lon = parseFloat(data1[0].lon);
+                    // Check if coordinates fall within Taiwan bounding box (21.5~25.5 N, 119.5~122.5 E)
+                    if (lat >= 21.5 && lat <= 25.5 && lon >= 119.5 && lon <= 122.5) {
+                        return { lat, lon, name: data1[0].display_name };
+                    }
                 }
             } catch (e) {
                 console.warn('Geocoding try 1 failed:', e);
             }
 
-            // Try 2: Fallback to Road/District level (e.g., "中華路4段" or "新竹市中華路")
+            // Try 2: Fallback to Street level (remove house number/alley)
             let fallbackKey = searchKey.replace(/[0-9]+號/g, '').replace(/[0-9]+巷/g, '');
             if (fallbackKey && fallbackKey !== searchKey) {
                 try {
@@ -666,26 +690,25 @@
                     const data2 = await res2.json();
 
                     if (data2 && data2.length > 0) {
-                        return {
-                            lat: parseFloat(data2[0].lat),
-                            lon: parseFloat(data2[0].lon),
-                            name: data2[0].display_name
-                        };
+                        const lat = parseFloat(data2[0].lat);
+                        const lon = parseFloat(data2[0].lon);
+                        if (lat >= 21.5 && lat <= 25.5 && lon >= 119.5 && lon <= 122.5) {
+                            return { lat, lon, name: data2[0].display_name };
+                        }
                     }
                 } catch (e) {
                     console.warn('Geocoding try 2 failed:', e);
                 }
             }
 
-            // Default fallback if completely unfound (Default to Hsinchu City center for origin, Taichung for dest)
-            if (queryText.includes('中華路')) {
-                return { lat: 24.7891, lon: 120.9324, name: '新竹市中華路4段' };
-            }
-            if (queryText.includes('裕元')) {
-                return { lat: 24.1812, lon: 120.6186, name: '台中市裕元花園酒店' };
+            // Try 3: Smart City/Landmark rule fallback
+            const cityFallback = detectTaiwanCityFallback(queryText);
+            if (cityFallback) {
+                return cityFallback;
             }
 
-            return { lat: 24.1368, lon: 120.6850, name: queryText };
+            // Safe Default
+            return { lat: 24.8015, lon: 120.9716, name: queryText };
         }
 
         // --- 4. Main Route Calculation & OSRM Integration ---
@@ -709,7 +732,7 @@
                 document.getElementById('resolvedLocationsBadge').textContent = 
                     `定位成功: ${originText.slice(0, 10)} ➔ ${destText.slice(0, 10)}`;
 
-                // Call OSRM Driving API
+                // Call OSRM Driving API using strictly [lon, lat] format
                 const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originGeo.lon},${originGeo.lat};${destGeo.lon},${destGeo.lat}?overview=full&geometries=geojson&steps=true`;
                 
                 const osrmRes = await fetch(osrmUrl);
