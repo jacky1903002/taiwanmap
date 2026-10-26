@@ -125,8 +125,8 @@
         </div>
     </nav>
 
-    <!-- 【左側懸浮區塊】上方開始導航、下方停止導航，正下方直接精簡嵌入常用地點設定 -->
-    <div id="violationLightCard" class="hidden lg:block fixed left-3 top-28 z-30 w-52 space-y-2">
+    <!-- 【左側懸浮區塊】調整 top-44 確保在頁籤下方，絕不遮擋文字 -->
+    <div id="violationLightCard" class="hidden lg:block fixed left-3 top-44 z-20 w-52 space-y-2">
         <!-- 導航控制按鈕 -->
         <div class="cream-card p-2 bg-white/95 shadow-lg space-y-1.5 border border-cream-200">
             <button onclick="startRealNavigation()" id="btnStartNav" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded shadow transition flex items-center justify-center gap-1.5">
@@ -137,7 +137,7 @@
             </button>
         </div>
 
-        <!-- 精簡垂直嵌入的常用地點設定面板 -->
+        <!-- 常用地點設定面板 -->
         <div class="cream-card p-2.5 bg-white/95 shadow-lg space-y-2 border border-cream-200 text-xs">
             <div class="font-bold text-mocha-700 flex items-center justify-between border-b border-cream-100 pb-1">
                 <span class="truncate"><i class="fa-solid fa-star text-accent-gold"></i> 常用地點</span>
@@ -183,7 +183,7 @@
         </div>
     </div>
 
-    <!-- Main Content Container (搭配左側面板寬度，左側 margin 設為 ml-56 以釋放右側最大空間) -->
+    <!-- Main Content Container (左側 margin 設為 ml-56) -->
     <main class="flex-1 p-4 lg:p-6 lg:ml-56 w-full max-w-none transition-all">
 
         <!-- ================= PAGE 1: 路線規劃與真實導航 ================= -->
@@ -252,7 +252,7 @@
                     </div>
                 </div>
 
-                <!-- Right Panel: Leaflet Map (最大化窗格) -->
+                <!-- Right Panel: Leaflet Map -->
                 <div class="lg:col-span-7 flex flex-col">
                     <div class="cream-card p-4 flex-1 flex flex-col">
                         <div class="flex items-center justify-between mb-3">
