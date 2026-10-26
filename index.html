@@ -98,7 +98,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-xl text-mocha-700 leading-none">Taiwan Travel Navigator</h1>
-                <span class="text-xs text-mocha-500 font-medium">旗艦版 · 巷弄導引與科技執法語音燈號警示</span>
+                <span class="text-xs text-mocha-500 font-medium">旗艦版 · 真實導航啟動與科技執法燈號警示</span>
             </div>
         </div>
 
@@ -118,7 +118,7 @@
     <nav class="bg-cream-100 border-b border-cream-200 px-4 lg:px-8 py-2 sticky top-[61px] z-30 shadow-inner w-full">
         <div class="w-full flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar w-full md:w-auto pb-1 md:pb-0">
-                <button onclick="switchTab('page1')" id="tab-page1" class="tab-btn active px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-route"></i> 1. 路線規劃與語音導航</button>
+                <button onclick="switchTab('page1')" id="tab-page1" class="tab-btn active px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-route"></i> 1. 路線規劃與真實導航</button>
                 <button onclick="switchTab('page2')" id="tab-page2" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-utensils"></i> 2. 沿途 10 大景點與美食</button>
                 <button onclick="switchTab('page3')" id="tab-page3" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-street-view"></i> 3. 離島足跡地圖</button>
                 <button onclick="switchTab('page4')" id="tab-page4" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-chart-pie"></i> 4. 個人行程資料庫</button>
@@ -130,12 +130,12 @@
     <!-- Main Content Container -->
     <main class="flex-1 p-4 lg:p-6 w-full max-w-none">
 
-        <!-- ================= PAGE 1: 路線規劃與語音導航 ================= -->
+        <!-- ================= PAGE 1: 路線規劃與真實導航 ================= -->
         <section id="page1" class="space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4 cream-card p-4">
                 <div class="flex items-center gap-2 text-sm">
                     <span class="bg-accent-alertRed/10 text-accent-alertRed font-bold px-3 py-1 rounded-full border border-accent-alertRed/20 text-xs animate-pulse">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 交通違規與科技執法即時語音燈號警示系統已啟動
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 即時真實導航與科技執法警示系統就緒
                     </span>
                 </div>
                 <button onclick="updateLatestMapData()" id="btnUpdateMap" class="px-3 py-1.5 bg-accent-amber hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
@@ -198,41 +198,42 @@
                             </div>
 
                             <button onclick="calculateRoute()" id="btnSearchRoute" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white font-semibold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-solid fa-magnifying-glass-location"></i> 開始導航並偵測科技執法路段
+                                <i class="fa-solid fa-magnifying-glass-location"></i> 解析路線與計算導航
                             </button>
                         </div>
                     </div>
 
-                    <!-- 違規警示燈號與語音控制盤 -->
+                    <!-- 導航控制與真實導航按鈕盤 -->
                     <div id="violationLightCard" class="cream-card p-4 bg-gradient-to-r from-cream-50 to-cream-100 border border-amber-200 space-y-3 transition-all duration-300">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-mocha-700 flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved text-accent-amber"></i> 違規警示燈號與語音導航盤
+                                <i class="fa-solid fa-shield-halved text-accent-amber"></i> 真實導航與科技執法警示盤
                             </span>
-                            <!-- 燈號指示燈 -->
                             <div class="flex items-center gap-1.5">
                                 <span id="lightIndicatorDot" class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
                                 <span id="voiceStatusBadge" class="text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold">靜止待命</span>
                             </div>
                         </div>
 
-                        <!-- 警示訊息顯示區 -->
+                        <!-- 違規警示燈號訊息區 -->
                         <div id="violationAlertBox" class="hidden bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
                             <i class="fa-solid fa-triangle-exclamation text-red-600 text-base animate-bounce"></i>
                             <span id="violationAlertText">注意：前方經過科技執法路段，速限 50 公里！</span>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <button onclick="startVoiceNavigation()" class="flex-1 bg-accent-amber hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1.5 shadow-sm">
-                                <i class="fa-solid fa-play"></i> 開始導航與違規警示
+                        <!-- 新增：【開始導航】與【停止導航】獨立控制按鈕 -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="startRealNavigation()" id="btnStartNav" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-location-arrow"></i> 開始導航
                             </button>
-                            <button onclick="pauseVoiceNavigation()" class="bg-cream-200 hover:bg-cream-300 text-mocha-700 text-xs font-bold px-3 py-2 rounded-lg transition">暫停</button>
-                            <button onclick="resetVoiceNavigation()" class="bg-cream-200 hover:bg-cream-300 text-mocha-700 text-xs font-bold px-3 py-2 rounded-lg transition">重設</button>
+                            <button onclick="stopRealNavigation()" id="btnStopNav" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-stop"></i> 停止導航
+                            </button>
                         </div>
 
                         <div class="space-y-1">
                             <div class="flex justify-between text-[11px] text-mocha-500 font-semibold">
-                                <span id="gpsStatusText">GPS 定位與科技執法防護中</span>
+                                <span id="gpsStatusText">GPS 即時定位待命</span>
                                 <span id="voiceProgressPercent">0%</span>
                             </div>
                             <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
@@ -249,7 +250,7 @@
                             </h3>
                             <span id="routeDistanceText" class="text-xs text-accent-amber font-bold"></span>
                         </div>
-                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[280px]">
+                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[260px]">
                             <div class="text-xs text-mocha-500 text-center py-8">請點擊計算導航帶出詳細門牌轉彎與科技執法警示</div>
                         </div>
                     </div>
@@ -277,9 +278,7 @@
                     <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
                         <i class="fa-solid fa-utensils text-accent-amber"></i> 沿途 Google 評價最高 10 大景點與 10 大美食
                     </h2>
-                    <p class="text-xs text-mocha-500 mt-1">根據當前規劃路線 [<span id="recRouteTag" class="font-bold text-mocha-700">載入中...</span>] 自動推薦</p>
                 </div>
-
                 <div class="space-y-8">
                     <div>
                         <h3 class="text-base font-bold text-mocha-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-mountain-sun text-accent-amber"></i> 沿途 10 大 Google 評價最高景點</h3>
@@ -663,7 +662,7 @@
             } catch (err) {
                 console.error(err);
             } finally {
-                btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 開始導航並偵測科技執法路段`;
+                btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 解析路線與計算導航`;
                 btn.disabled = false;
             }
         }
@@ -688,7 +687,6 @@
             map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
         }
 
-        // 解析路線並自動安插科技執法與違規警示點
         function parseDetailedAlleyStepsWithEnforcement(route, originText, destText) {
             const distanceKm = (route.distance / 1000).toFixed(1);
             const durationMin = Math.round(route.duration / 60);
@@ -723,7 +721,6 @@
                     location: [step.maneuver.location[1], step.maneuver.location[0]]
                 });
 
-                // 模擬在特定間隔安插「科技執法」或「區間測速」警示點
                 if (idx === 1 || idx === Math.floor(route.legs[0].steps.length / 2)) {
                     const enfType = idx === 1 ? '【科技執法】路口多功能違規取締 (限速50km)' : '【區間測速】平均速率取締路段 (限速60km)';
                     navigationSteps.push({
@@ -765,12 +762,13 @@
                 `;
                 list.appendChild(item);
             });
-            resetVoiceNavigation();
+            resetRealNavigation();
         }
 
-        function startVoiceNavigation() {
+        // --- 真實導航啟動與停止函式 ---
+        function startRealNavigation() {
             if (navigationSteps.length === 0) {
-                alert('請先點擊計算導航路線！');
+                alert('請先點擊「解析路線與計算導航」！');
                 return;
             }
             if (!('speechSynthesis' in window)) {
@@ -779,30 +777,37 @@
             }
 
             isVoicePlaying = true;
-            document.getElementById('voiceStatusBadge').textContent = '科技執法防護與語音導航中...';
-            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-accent-alertRed text-white px-2 py-0.5 rounded-full font-semibold animate-pulse';
-            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-red-500 inline-block animate-ping';
+            document.getElementById('voiceStatusBadge').textContent = '【真實導航進行中】';
+            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-semibold animate-pulse';
+            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-ping';
+            speakText("已開始真實導航，請依導航指示行駛。");
 
+            // 啟動高精度 GPS 即時位置追蹤
             if ('geolocation' in navigator) {
                 watchId = navigator.geolocation.watchPosition(position => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    document.getElementById('gpsStatusText').textContent = `GPS 定位中 (Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)})`;
-                    if (animatedMarker) { animatedMarker.setLatLng([lat, lon]); map.panTo([lat, lon]); }
-                }, err => { console.warn("GPS watch fallback:", err); }, { enableHighAccuracy: true });
+                    document.getElementById('gpsStatusText').textContent = `GPS 即時追蹤 (Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)})`;
+                    if (animatedMarker) {
+                        animatedMarker.setLatLng([lat, lon]);
+                        map.panTo([lat, lon]);
+                    }
+                }, err => {
+                    console.warn("GPS watch error:", err);
+                    document.getElementById('gpsStatusText').textContent = 'GPS 定位逾時，切換為模擬導航';
+                }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 5000 });
+            } else {
+                document.getElementById('gpsStatusText').textContent = '您的裝置不支援即時 GPS 定位';
             }
 
-            playNextVoiceStep();
+            playNextRealStep();
         }
 
-        function playNextVoiceStep() {
+        function playNextRealStep() {
             if (!isVoicePlaying || currentVoiceStepIndex >= navigationSteps.length) {
                 if (currentVoiceStepIndex >= navigationSteps.length) {
                     speakText("您已平安抵達詳細目的地，導航結束。");
-                    document.getElementById('voiceStatusBadge').textContent = '導航完成';
-                    document.getElementById('violationAlertBox').classList.add('hidden');
-                    document.getElementById('violationLightCard').classList.remove('alert-flashing');
-                    document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block';
+                    stopRealNavigation();
                 }
                 return;
             }
@@ -820,7 +825,6 @@
                 map.panTo(step.location);
             }
 
-            // 燈號與語音觸發：如果是科技執法點，啟動閃爍燈號與警告語音
             const alertBox = document.getElementById('violationAlertBox');
             const alertCard = document.getElementById('violationLightCard');
             const dot = document.getElementById('lightIndicatorDot');
@@ -833,7 +837,7 @@
             } else {
                 alertBox.classList.add('hidden');
                 alertCard.classList.remove('alert-flashing');
-                dot.className = 'w-3 h-3 rounded-full bg-amber-500 inline-block animate-pulse';
+                dot.className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse';
             }
 
             const percent = Math.round(((currentVoiceStepIndex + 1) / navigationSteps.length) * 100);
@@ -842,8 +846,32 @@
 
             speakText(step.instruction, () => {
                 currentVoiceStepIndex++;
-                setTimeout(playNextVoiceStep, 1800);
+                setTimeout(playNextRealStep, 2000);
             });
+        }
+
+        function stopRealNavigation() {
+            isVoicePlaying = false;
+            window.speechSynthesis.cancel();
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            document.getElementById('voiceStatusBadge').textContent = '導航已停止';
+            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold';
+            document.getElementById('violationAlertBox').classList.add('hidden');
+            document.getElementById('violationLightCard').classList.remove('alert-flashing');
+            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block';
+            document.getElementById('gpsStatusText').textContent = 'GPS 即時定位待命';
+            alert('【真實導航已結束】已停止即時定位與語音播報。');
+        }
+
+        function resetRealNavigation() {
+            stopRealNavigation();
+            currentVoiceStepIndex = 0;
+            document.getElementById('voiceProgressBar').style.width = `0%`;
+            document.getElementById('voiceProgressPercent').textContent = `0%`;
+            document.getElementById('voiceStatusBadge').textContent = '靜止待命';
         }
 
         function speakText(text, onEndCallback) {
@@ -853,29 +881,6 @@
             voiceUtterance.rate = 1.0;
             if (onEndCallback) voiceUtterance.onend = onEndCallback;
             window.speechSynthesis.speak(voiceUtterance);
-        }
-
-        function pauseVoiceNavigation() {
-            isVoicePlaying = false;
-            window.speechSynthesis.cancel();
-            if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-            document.getElementById('voiceStatusBadge').textContent = '導航已暫停';
-            document.getElementById('violationLightCard').classList.remove('alert-flashing');
-            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-amber-500 inline-block';
-        }
-
-        function resetVoiceNavigation() {
-            isVoicePlaying = false;
-            window.speechSynthesis.cancel();
-            if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-            currentVoiceStepIndex = 0;
-            document.getElementById('voiceProgressBar').style.width = `0%`;
-            document.getElementById('voiceProgressPercent').textContent = `0%`;
-            document.getElementById('voiceStatusBadge').textContent = '靜止待命';
-            document.getElementById('gpsStatusText').textContent = 'GPS 定位與科技執法防護中';
-            document.getElementById('violationAlertBox').classList.add('hidden');
-            document.getElementById('violationLightCard').classList.remove('alert-flashing');
-            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block';
         }
 
         function renderAttractionsAndFoods() {
