@@ -98,7 +98,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-xl text-mocha-700 leading-none">Taiwan Travel Navigator</h1>
-                <span class="text-xs text-mocha-500 font-medium">旗艦版 · 安全防錯導航與科技執法燈號警示</span>
+                <span class="text-xs text-mocha-500 font-medium">旗艦版 · 穩定防錯導航與科技執法燈號警示</span>
             </div>
         </div>
 
@@ -127,17 +127,56 @@
         </div>
     </nav>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 p-4 lg:p-6 w-full max-w-none">
+    <!-- 【新增需求 3】將「開始導航」與「停止導航」控制面板固定懸浮在整個螢幕的左手邊 -->
+    <div id="violationLightCard" class="hidden lg:block fixed left-4 top-36 z-30 w-72 cream-card p-4 bg-gradient-to-r from-cream-50 to-cream-100 border-2 border-accent-amber/50 space-y-3 shadow-2xl transition-all duration-300">
+        <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-mocha-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-accent-amber"></i> 真實導航與科技執法警示盤
+            </span>
+            <div class="flex items-center gap-1.5">
+                <span id="lightIndicatorDot" class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                <span id="voiceStatusBadge" class="text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold">靜止待命</span>
+            </div>
+        </div>
+
+        <!-- 違規警示燈號訊息區 -->
+        <div id="violationAlertBox" class="hidden bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-red-600 text-base animate-bounce"></i>
+            <span id="violationAlertText">注意：前方經過科技執法路段，速限 50 公里！</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="startRealNavigation()" id="btnStartNav" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-location-arrow"></i> 開始導航
+            </button>
+            <button onclick="stopRealNavigation()" id="btnStopNav" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-stop"></i> 停止導航
+            </button>
+        </div>
+
+        <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-mocha-500 font-semibold">
+                <span id="gpsStatusText">GPS 即時定位待命</span>
+                <span id="voiceProgressPercent">0%</span>
+            </div>
+            <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
+                <div id="voiceProgressBar" class="bg-accent-amber h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container (加入 lg:ml-80 以避開左側固定懸浮導航列) -->
+    <main class="flex-1 p-4 lg:p-6 lg:ml-80 w-full max-w-none transition-all">
 
         <!-- ================= PAGE 1: 路線規劃與真實導航 ================= -->
         <section id="page1" class="space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4 cream-card p-4">
                 <div class="flex items-center gap-2 text-sm">
                     <span class="bg-accent-alertRed/10 text-accent-alertRed font-bold px-3 py-1 rounded-full border border-accent-alertRed/20 text-xs animate-pulse">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 穩定路由與科技執法警示系統就緒
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 自動路由與科技執法警示系統就緒
                     </span>
                 </div>
+                <div id="recRouteTag" class="text-xs font-semibold text-mocha-700 bg-cream-100 px-3 py-1 rounded border border-cream-200">準備計算路線</div>
                 <button onclick="updateLatestMapData()" id="btnUpdateMap" class="px-3 py-1.5 bg-accent-amber hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
                     <i class="fa-solid fa-cloud-arrow-down"></i> 更新最新圖資
                 </button>
@@ -177,7 +216,7 @@
                 <div class="lg:col-span-5 space-y-4 flex flex-col">
                     <div class="cream-card p-5 space-y-4">
                         <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2 border-b border-cream-100 pb-3">
-                            <i class="fa-solid fa-route text-accent-amber"></i> 起終點下拉選單與導航設定
+                            <i class="fa-solid fa-route text-accent-amber"></i> 起終點下拉選單與自動導航設定
                         </h2>
                         
                         <div class="space-y-3">
@@ -186,7 +225,7 @@
                                 <select id="originSelect" onchange="onOriginSelectChange(this.value)" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs font-bold text-mocha-700 mb-2">
                                     <option value="">-- 請選擇常用地點或自行輸入 --</option>
                                 </select>
-                                <input type="text" id="originInput" value="新竹市中華路四段64巷2號5樓之1" placeholder="詳細出發門牌地址..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 font-medium">
+                                <input type="text" id="originInput" oninput="checkAutoCalculate()" value="新竹市中華路四段64巷2號5樓之1" placeholder="詳細出發門牌地址..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 font-medium">
                             </div>
 
                             <div>
@@ -194,7 +233,7 @@
                                 <select id="destSelect" onchange="onDestSelectChange(this.value)" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs font-bold text-mocha-700 mb-2">
                                     <option value="">-- 請選擇常用地點或自行輸入 --</option>
                                 </select>
-                                <input type="text" id="destInput" value="台中市西屯區台灣大道四段1727號 (裕元花園酒店)" placeholder="詳細目的地門牌地址..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 font-medium">
+                                <input type="text" id="destInput" oninput="checkAutoCalculate()" value="台中市西屯區台灣大道四段1727號 (裕元花園酒店)" placeholder="詳細目的地門牌地址..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 font-medium">
                             </div>
 
                             <button onclick="calculateRoute()" id="btnSearchRoute" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white font-semibold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md">
@@ -203,41 +242,11 @@
                         </div>
                     </div>
 
-                    <!-- 導航控制與真實導航按鈕盤 -->
-                    <div id="violationLightCard" class="cream-card p-4 bg-gradient-to-r from-cream-50 to-cream-100 border border-amber-200 space-y-3 transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-mocha-700 flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved text-accent-amber"></i> 真實導航與科技執法警示盤
-                            </span>
-                            <div class="flex items-center gap-1.5">
-                                <span id="lightIndicatorDot" class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
-                                <span id="voiceStatusBadge" class="text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold">靜止待命</span>
-                            </div>
-                        </div>
-
-                        <!-- 違規警示燈號訊息區 -->
-                        <div id="violationAlertBox" class="hidden bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
-                            <i class="fa-solid fa-triangle-exclamation text-red-600 text-base animate-bounce"></i>
-                            <span id="violationAlertText">注意：前方經過科技執法路段，速限 50 公里！</span>
-                        </div>
-
+                    <!-- 行動裝置螢幕下的備用導航按鈕盤 -->
+                    <div class="block lg:hidden cream-card p-4 bg-cream-50 space-y-2">
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="startRealNavigation()" id="btnStartNav" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
-                                <i class="fa-solid fa-location-arrow"></i> 開始導航
-                            </button>
-                            <button onclick="stopRealNavigation()" id="btnStopNav" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 shadow-md">
-                                <i class="fa-solid fa-stop"></i> 停止導航
-                            </button>
-                        </div>
-
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-[11px] text-mocha-500 font-semibold">
-                                <span id="gpsStatusText">GPS 即時定位待命</span>
-                                <span id="voiceProgressPercent">0%</span>
-                            </div>
-                            <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
-                                <div id="voiceProgressBar" class="bg-accent-amber h-full w-0 transition-all duration-300"></div>
-                            </div>
+                            <button onclick="startRealNavigation()" class="bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg">開始導航</button>
+                            <button onclick="stopRealNavigation()" class="bg-red-600 text-white text-xs font-bold py-2 rounded-lg">停止導航</button>
                         </div>
                     </div>
 
@@ -249,8 +258,8 @@
                             </h3>
                             <span id="routeDistanceText" class="text-xs text-accent-amber font-bold"></span>
                         </div>
-                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[260px]">
-                            <div class="text-xs text-mocha-500 text-center py-8">請點擊計算導航帶出詳細門牌轉彎與科技執法警示</div>
+                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[320px]">
+                            <div class="text-xs text-mocha-500 text-center py-8">輸入出發地與目的地後將自動帶出詳細轉彎與科技執法警示</div>
                         </div>
                     </div>
                 </div>
@@ -264,7 +273,7 @@
                             </h2>
                             <span id="resolvedLocationsBadge" class="text-xs text-mocha-700 bg-cream-100 px-3 py-1 rounded border border-cream-200 font-medium">尚未定位</span>
                         </div>
-                        <div id="leafletMap" class="w-full flex-1 min-h-[560px] h-full"></div>
+                        <div id="leafletMap" class="w-full flex-1 min-h-[580px] h-full"></div>
                     </div>
                 </div>
             </div>
@@ -429,6 +438,7 @@
         let voiceUtterance = null;
         let watchId = null;
         let map, routeLayer, startMarker, endMarker, animatedMarker;
+        let autoCalcTimer = null;
 
         try {
             firebase.initializeApp(firebaseConfig);
@@ -547,6 +557,7 @@
         function renderCustomLocationsUI() {
             ['home', 'work', 'favorite'].forEach(type => {
                 const container = document.getElementById(`${type}List`);
+                if (!container) return;
                 container.innerHTML = '';
                 const list = customLocations[type] || [];
                 if (list.length === 0) {
@@ -568,6 +579,8 @@
         function updateDropdowns() {
             const originSelect = document.getElementById('originSelect');
             const destSelect = document.getElementById('destSelect');
+            if (!originSelect || !destSelect) return;
+
             originSelect.innerHTML = `<option value="">-- 請選擇常用地點或自行輸入 --</option>`;
             destSelect.innerHTML = `<option value="">-- 請選擇常用地點或自行輸入 --</option>`;
 
@@ -590,8 +603,31 @@
             });
         }
 
-        function onOriginSelectChange(val) { if (val) document.getElementById('originInput').value = val; }
-        function onDestSelectChange(val) { if (val) document.getElementById('destInput').value = val; }
+        function onOriginSelectChange(val) {
+            if (val) {
+                document.getElementById('originInput').value = val;
+                checkAutoCalculate();
+            }
+        }
+        
+        function onDestSelectChange(val) {
+            if (val) {
+                document.getElementById('destInput').value = val;
+                checkAutoCalculate();
+            }
+        }
+
+        // 【新增需求 2】當輸入出發點與目的地時自動計算帶入
+        function checkAutoCalculate() {
+            const originText = document.getElementById('originInput').value.trim();
+            const destText = document.getElementById('destInput').value.trim();
+            if (originText.length > 3 && destText.length > 3) {
+                if (autoCalcTimer) clearTimeout(autoCalcTimer);
+                autoCalcTimer = setTimeout(() => {
+                    calculateRoute();
+                }, 800);
+            }
+        }
 
         function updateLatestMapData() {
             const btn = document.getElementById('btnUpdateMap');
@@ -627,31 +663,30 @@
             return { lat: 24.8015, lon: 120.9716, name: q };
         }
 
-        // --- 完整強固的 calculateRoute (加入 Safe DOM Check 與離線備用路由) ---
+        // --- 完整強固的 calculateRoute (附帶防錯與自動帶入轉彎警示) ---
         async function calculateRoute() {
             const originText = document.getElementById('originInput').value.trim();
             const destText = document.getElementById('destInput').value.trim();
             const btn = document.getElementById('btnSearchRoute');
 
-            if (!originText || !destText) {
-                alert('請完整輸入出發地與目的地！');
-                return;
-            }
+            if (!originText || !destText) return;
 
-            // 安全檢查 recRouteTag 是否存在
             const recRouteTagEl = document.getElementById('recRouteTag');
             if (recRouteTagEl) {
                 recRouteTagEl.textContent = `${originText} ➔ ${destText}`;
             }
 
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在解析巷弄與科技執法路段...`;
-            btn.disabled = true;
+            if (btn) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在解析巷弄與科技執法路段...`;
+                btn.disabled = true;
+            }
 
             try {
                 const originGeo = await fetchGeocode(originText);
                 const destGeo = await fetchGeocode(destText);
 
-                document.getElementById('resolvedLocationsBadge').textContent = `定位成功: ${originText.slice(0, 10)}... ➔ ${destText.slice(0, 10)}...`;
+                const badgeEl = document.getElementById('resolvedLocationsBadge');
+                if (badgeEl) badgeEl.textContent = `定位成功: ${originText.slice(0, 10)}... ➔ ${destText.slice(0, 10)}...`;
 
                 const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originGeo.lon},${originGeo.lat};${destGeo.lon},${destGeo.lat}?overview=full&geometries=geojson&steps=true`;
                 
@@ -681,14 +716,16 @@
                 renderSmartRecommendations();
             } catch (err) {
                 console.error("計算導航發生例外:", err);
-                alert('計算導航時發生錯誤，請確認輸入內容。');
             } finally {
-                btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 解析路線與計算導航`;
-                btn.disabled = false;
+                if (btn) {
+                    btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 解析路線與計算導航`;
+                    btn.disabled = false;
+                }
             }
         }
 
         function renderRouteOnMap(coordinates, originGeo, destGeo, originText, destText) {
+            if (!map) return;
             if (routeLayer) map.removeLayer(routeLayer);
             if (startMarker) map.removeLayer(startMarker);
             if (endMarker) map.removeLayer(endMarker);
@@ -709,8 +746,11 @@
         }
 
         function parseFallbackSteps(originText, destText) {
-            document.getElementById('routeDistanceText').textContent = `總長: 128.5 km | 預估: 95 分`;
+            const distEl = document.getElementById('routeDistanceText');
+            if (distEl) distEl.textContent = `總長: 128.5 km | 預估: 95 分`;
+            
             const list = document.getElementById('transportOptionsList');
+            if (!list) return;
             list.innerHTML = '';
             navigationSteps = [
                 { roadName: '出發點門牌起點', distance: '0.0', instruction: `從詳細出發地 [${originText}] 正式出發`, isEnforcement: false, location: [24.7891, 120.9324] },
@@ -747,8 +787,11 @@
             const distanceKm = (route.distance / 1000).toFixed(1);
             const durationMin = Math.round(route.duration / 60);
 
-            document.getElementById('routeDistanceText').textContent = `總長: ${distanceKm} km | 預估: ${durationMin} 分`;
+            const distEl = document.getElementById('routeDistanceText');
+            if (distEl) distEl.textContent = `總長: ${distanceKm} km | 預估: ${durationMin} 分`;
+            
             const list = document.getElementById('transportOptionsList');
+            if (!list) return;
             list.innerHTML = '';
             navigationSteps = [];
 
@@ -817,7 +860,7 @@
         // --- 真實導航與即時定位 ---
         function startRealNavigation() {
             if (navigationSteps.length === 0) {
-                alert('請先點擊「解析路線與計算導航」！');
+                alert('請先設定出發地與目的地帶出導航路徑！');
                 return;
             }
             if (!('speechSynthesis' in window)) {
@@ -826,26 +869,31 @@
             }
 
             isVoicePlaying = true;
-            document.getElementById('voiceStatusBadge').textContent = '【真實導航進行中】';
-            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-semibold animate-pulse';
-            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-ping';
+            const badge = document.getElementById('voiceStatusBadge');
+            if (badge) {
+                badge.textContent = '【真實導航進行中】';
+                badge.className = 'text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-semibold animate-pulse';
+            }
+            const dot = document.getElementById('lightIndicatorDot');
+            if (dot) dot.className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-ping';
+            
             speakText("已開始真實導航，請依導航指示行駛。");
 
             if ('geolocation' in navigator) {
                 watchId = navigator.geolocation.watchPosition(position => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    document.getElementById('gpsStatusText').textContent = `GPS 即時追蹤 (Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)})`;
-                    if (animatedMarker) {
+                    const gpsText = document.getElementById('gpsStatusText');
+                    if (gpsText) gpsText.textContent = `GPS 即時追蹤 (Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)})`;
+                    if (animatedMarker && map) {
                         animatedMarker.setLatLng([lat, lon]);
                         map.panTo([lat, lon]);
                     }
                 }, err => {
                     console.warn("GPS watch error:", err);
-                    document.getElementById('gpsStatusText').textContent = 'GPS 定位逾時，切換為模擬導航';
+                    const gpsText = document.getElementById('gpsStatusText');
+                    if (gpsText) gpsText.textContent = 'GPS 定位逾時，切換為模擬導航';
                 }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 5000 });
-            } else {
-                document.getElementById('gpsStatusText').textContent = '您的裝置不支援即時 GPS 定位';
             }
 
             playNextRealStep();
@@ -868,7 +916,7 @@
                 activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            if (animatedMarker && step.location && !watchId) {
+            if (animatedMarker && step.location && !watchId && map) {
                 animatedMarker.setLatLng(step.location);
                 map.panTo(step.location);
             }
@@ -878,19 +926,24 @@
             const dot = document.getElementById('lightIndicatorDot');
 
             if (step.isEnforcement) {
-                alertBox.classList.remove('hidden');
-                document.getElementById('violationAlertText').textContent = step.instruction;
-                alertCard.classList.add('alert-flashing');
-                dot.className = 'w-3 h-3 rounded-full bg-red-600 inline-block animate-ping';
+                if (alertBox) {
+                    alertBox.classList.remove('hidden');
+                    const alertText = document.getElementById('violationAlertText');
+                    if (alertText) alertText.textContent = step.instruction;
+                }
+                if (alertCard) alertCard.classList.add('alert-flashing');
+                if (dot) dot.className = 'w-3 h-3 rounded-full bg-red-600 inline-block animate-ping';
             } else {
-                alertBox.classList.add('hidden');
-                alertCard.classList.remove('alert-flashing');
-                dot.className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse';
+                if (alertBox) alertBox.classList.add('hidden');
+                if (alertCard) alertCard.classList.remove('alert-flashing');
+                if (dot) dot.className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse';
             }
 
             const percent = Math.round(((currentVoiceStepIndex + 1) / navigationSteps.length) * 100);
-            document.getElementById('voiceProgressBar').style.width = `${percent}%`;
-            document.getElementById('voiceProgressPercent').textContent = `${percent}%`;
+            const bar = document.getElementById('voiceProgressBar');
+            const pctText = document.getElementById('voiceProgressPercent');
+            if (bar) bar.style.width = `${percent}%`;
+            if (pctText) pctText.textContent = `${percent}%`;
 
             speakText(step.instruction, () => {
                 currentVoiceStepIndex++;
@@ -905,20 +958,30 @@
                 navigator.geolocation.clearWatch(watchId);
                 watchId = null;
             }
-            document.getElementById('voiceStatusBadge').textContent = '導航已停止';
-            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold';
-            document.getElementById('violationAlertBox').classList.add('hidden');
-            document.getElementById('violationLightCard').classList.remove('alert-flashing');
-            document.getElementById('lightIndicatorDot').className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block';
-            document.getElementById('gpsStatusText').textContent = 'GPS 即時定位待命';
+            const badge = document.getElementById('voiceStatusBadge');
+            if (badge) {
+                badge.textContent = '導航已停止';
+                badge.className = 'text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold';
+            }
+            const alertBox = document.getElementById('violationAlertBox');
+            if (alertBox) alertBox.classList.add('hidden');
+            const alertCard = document.getElementById('violationLightCard');
+            if (alertCard) alertCard.classList.remove('alert-flashing');
+            const dot = document.getElementById('lightIndicatorDot');
+            if (dot) dot.className = 'w-3 h-3 rounded-full bg-emerald-500 inline-block';
+            const gpsText = document.getElementById('gpsStatusText');
+            if (gpsText) gpsText.textContent = 'GPS 即時定位待命';
         }
 
         function resetRealNavigation() {
             stopRealNavigation();
             currentVoiceStepIndex = 0;
-            document.getElementById('voiceProgressBar').style.width = `0%`;
-            document.getElementById('voiceProgressPercent').textContent = `0%`;
-            document.getElementById('voiceStatusBadge').textContent = '靜止待命';
+            const bar = document.getElementById('voiceProgressBar');
+            const pctText = document.getElementById('voiceProgressPercent');
+            if (bar) bar.style.width = `0%`;
+            if (pctText) pctText.textContent = `0%`;
+            const badge = document.getElementById('voiceStatusBadge');
+            if (badge) badge.textContent = '靜止待命';
         }
 
         function speakText(text, onEndCallback) {
@@ -1116,6 +1179,8 @@
             updateDropdowns();
             renderSmartRecommendations('all');
             renderFootprintMap();
+            // 頁面載入後自動計算預設路線
+            setTimeout(() => calculateRoute(), 500);
         };
     </script>
 </body>
