@@ -13,15 +13,15 @@
                 extend: {
                     colors: {
                         cream: {
-                            50: '#FAF7F2',
-                            100: '#F2EFE9',
-                            200: '#E6E0D4',
-                            300: '#D5C9B5',
+                            50: '#FAF8F5',
+                            100: '#F4EFEA',
+                            200: '#E8DFD5',
+                            300: '#D9CBBB',
                         },
                         mocha: {
-                            500: '#6D5950',
-                            700: '#3E2723',
-                            900: '#261715',
+                            500: '#7C6354',
+                            700: '#5C4033',
+                            900: '#3D281C',
                         },
                         accent: {
                             terracotta: '#C67D5A',
@@ -55,24 +55,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
         body {
-            background-color: #FAF7F2;
-            color: #3E2723;
+            background-color: #FAF8F5;
+            color: #5C4033;
             font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
-            font-size: 1.05rem;
+            font-size: 1.125rem; /* ~18px base scale for readability */
+            line-height: 1.6;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #F2EFE9;
+            background: #F4EFEA;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #C5A059;
@@ -80,23 +81,31 @@
         }
         .leaflet-container {
             border-radius: 1rem;
-            box-shadow: 0 4px 20px -2px rgba(62, 39, 35, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(60, 40, 30, 0.08);
             z-index: 10;
         }
         .cream-card {
             background-color: #FFFFFF;
-            border: 1px solid #E6E0D4;
-            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.04);
+            border: 1px solid #E8DFD5;
+            box-shadow: 0 4px 15px rgba(60, 40, 30, 0.04);
             border-radius: 1rem;
         }
         .tab-btn.active {
-            background-color: #3E2723;
-            color: #FAF7F2;
-            border-color: #3E2723;
+            background-color: #5C4033;
+            color: #FAF8F5;
+            border-color: #5C4033;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .voice-active {
+            animation: pulse-ring 2s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col custom-scrollbar overflow-x-hidden text-base">
+<body class="min-h-screen flex flex-col custom-scrollbar overflow-x-hidden text-lg">
 
     <!-- Auth Overlay Modal -->
     <div id="authModal" class="fixed inset-0 bg-mocha-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -106,17 +115,17 @@
                     <i class="fa-solid fa-compass"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-mocha-700">台灣旅行地圖導覽</h2>
-                <p class="text-sm text-mocha-500 mt-1">請登入帳號以同步您的專屬行程與足跡</p>
+                <p class="text-sm text-mocha-500 mt-1">請登入帳號以實時同步 Firebase 雲端行程數據</p>
             </div>
 
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-mocha-700 uppercase tracking-wider mb-1">電子郵件 Email</label>
-                    <input type="email" id="authEmail" required placeholder="name@company.com" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50/50 text-mocha-700 text-sm">
+                    <input type="email" id="authEmail" required placeholder="user@example.com" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50 text-mocha-700 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-mocha-700 uppercase tracking-wider mb-1">密碼 Password</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50/50 text-mocha-700 text-sm">
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-cream-200 focus:outline-none focus:ring-2 focus:ring-accent-amber bg-cream-50 text-mocha-700 text-sm">
                 </div>
 
                 <div id="authError" class="text-red-500 text-xs text-center hidden"></div>
@@ -133,50 +142,54 @@
         </div>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-cream-200 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+    <!-- Navigation Header (Full Width) -->
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-cream-200 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm w-full">
         <div class="flex items-center gap-3">
-            <div class="bg-accent-amber text-white p-2.5 rounded-xl shadow-sm">
+            <div class="bg-accent-amber text-white p-3 rounded-xl shadow-sm">
                 <i class="fa-solid fa-map-location-dot text-2xl"></i>
             </div>
             <div>
                 <h1 class="font-bold text-xl text-mocha-700 leading-none">Taiwan Travel Navigator</h1>
-                <span class="text-xs text-mocha-500">奶油白企業旗艦版 · 精準地址導航與全島交通比價系統</span>
+                <span class="text-xs text-mocha-500 font-medium">滿版企業旗艦版 · 模擬語音導航與 Firebase 雲端實時同步</span>
             </div>
         </div>
 
         <div class="flex items-center gap-4 text-xs">
             <div class="flex items-center gap-2 bg-cream-50 border border-cream-200 px-3 py-1.5 rounded-full">
                 <span id="connectedDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                <span id="connectedStatus" class="text-mocha-500 font-medium">系統運作中</span>
+                <span id="connectedStatus" class="text-mocha-500 font-medium">Firebase 連線中</span>
             </div>
 
             <div class="hidden md:flex items-center gap-1.5 text-mocha-500 bg-cream-50 border border-cream-200 px-3 py-1.5 rounded-full">
                 <i class="fa-regular fa-clock text-accent-gold"></i>
-                <span>上次同步: <strong id="lastSavedTime" class="font-semibold text-mocha-700">即時紀錄</strong></span>
+                <span>同步狀態: <strong id="lastSavedTime" class="font-semibold text-mocha-700">即時紀錄</strong></span>
             </div>
 
             <div id="userProfile" class="flex items-center gap-3">
-                <span id="userEmail" class="font-medium text-mocha-700 border-l border-cream-200 pl-3 text-xs">展示用戶 (Guest)</span>
+                <span id="userEmail" class="font-medium text-mocha-700 border-l border-cream-200 pl-3 text-xs">訪客模式 (Guest)</span>
+                <button onclick="openAuthModal()" class="text-accent-amber hover:underline font-bold text-xs">登入/註冊</button>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Tabs Bar -->
-    <nav class="bg-cream-100 border-b border-cream-200 px-4 lg:px-8 py-2 sticky top-[61px] z-30 shadow-inner">
-        <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+    <!-- Navigation Tabs Bar (Full Width) -->
+    <nav class="bg-cream-100 border-b border-cream-200 px-4 lg:px-8 py-2 sticky top-[61px] z-30 shadow-inner w-full">
+        <div class="w-full flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar w-full md:w-auto pb-1 md:pb-0">
                 <button onclick="switchTab('page1')" id="tab-page1" class="tab-btn active px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold transition flex items-center gap-2 whitespace-nowrap">
-                    <i class="fa-solid fa-route"></i> 1. 精準導航與路線規劃
+                    <i class="fa-solid fa-route"></i> 1. 行程路線規劃 & 模擬語音導航
                 </button>
                 <button onclick="switchTab('page2')" id="tab-page2" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
-                    <i class="fa-solid fa-table-list"></i> 2. 行程數據管理
+                    <i class="fa-solid fa-utensils"></i> 2. 景點與美食推薦
                 </button>
                 <button onclick="switchTab('page3')" id="tab-page3" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
-                    <i class="fa-solid fa-chart-pie"></i> 3. 足跡地圖與統計圖表
+                    <i class="fa-solid fa-street-view"></i> 3. 個人足跡地圖
                 </button>
                 <button onclick="switchTab('page4')" id="tab-page4" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
-                    <i class="fa-solid fa-utensils"></i> 4. 目的地美食與景點推薦
+                    <i class="fa-solid fa-chart-pie"></i> 4. 旅途數據分析
+                </button>
+                <button onclick="switchTab('page5')" id="tab-page5" class="tab-btn px-4 py-2 rounded-xl border border-cream-300 text-sm font-bold text-mocha-700 hover:bg-cream-200 transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-lightbulb"></i> 5. 智慧路線推薦方案
                 </button>
             </div>
 
@@ -191,29 +204,29 @@
         </div>
     </nav>
 
-    <!-- Main Content Container -->
-    <main id="exportContainer" class="flex-1 p-4 lg:p-6 max-w-7xl w-full mx-auto">
+    <!-- Main Content Container (Full Width, Zero Side Margin) -->
+    <main id="exportContainer" class="flex-1 p-4 lg:p-6 w-full max-w-none">
 
-        <!-- ================= PAGE 1: 路線規劃與地圖 ================= -->
+        <!-- ================= PAGE 1: 路線規劃與語音實體導航 ================= -->
         <section id="page1" class="space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4 cream-card p-4">
                 <div class="flex items-center gap-2 text-sm">
                     <span class="bg-accent-amber/10 text-accent-amber font-bold px-3 py-1 rounded-full border border-accent-amber/20 text-xs">
-                        <i class="fa-solid fa-location-crosshairs mr-1"></i> 精準地理編碼定位
+                        <i class="fa-solid fa-bullhorn mr-1"></i> Web Speech API 語音導航啟用
                     </span>
-                    <span class="text-xs text-mocha-500">輸入完整地址（如中華路4段64巷2號5樓之1）或地標（如裕元花園酒店）即可精準繪製真實駕駛與轉乘路線</span>
+                    <span class="text-xs text-mocha-500">輸入起終點即可自動繪製完整主幹道（包含國道、省道與縣道轉灣點），並支援語音播放實體導航。</span>
                 </div>
                 <button onclick="updateMapTile()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-arrows-rotate text-accent-gold"></i> 重設地圖視角
+                    <i class="fa-solid fa-arrows-rotate text-accent-gold"></i> 重置地圖視野
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[680px]">
-                <!-- Left Panel: Search Controls -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[720px]">
+                <!-- Left Panel: Search & Turn-by-turn Navigation -->
                 <div class="lg:col-span-5 space-y-4 flex flex-col">
                     <div class="cream-card p-5 space-y-4">
                         <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2 border-b border-cream-100 pb-3">
-                            <i class="fa-solid fa-route text-accent-amber"></i> 行程起終點與實時導覽
+                            <i class="fa-solid fa-route text-accent-amber"></i> 行程起終點與智慧定位
                         </h2>
                         
                         <div class="space-y-3">
@@ -224,10 +237,10 @@
                                     </label>
                                     <div class="flex gap-1 text-[11px]">
                                         <button type="button" onclick="setQuickOrigin('自家點')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">🏠 自家點</button>
-                                        <button type="button" onclick="setQuickOrigin('最愛')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">⭐ 最愛</button>
+                                        <button type="button" onclick="setQuickOrigin('台北車站')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">🚉 台北車站</button>
                                     </div>
                                 </div>
-                                <input type="text" id="originInput" value="中華路4段64巷2號5樓之1" placeholder="輸入出發地址或縣市名稱..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber font-medium">
+                                <input type="text" id="originInput" value="中華路4段64巷2號5樓之1" placeholder="輸入完整出發地址或地標..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber font-medium">
                             </div>
 
                             <div>
@@ -237,7 +250,7 @@
                                     </label>
                                     <div class="flex gap-1 text-[11px]">
                                         <button type="button" onclick="setQuickDest('裕元花園酒店')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">🏨 裕元酒店</button>
-                                        <button type="button" onclick="setQuickDest('高雄')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">📍 左營高鐵</button>
+                                        <button type="button" onclick="setQuickDest('高雄左營高鐵站')" class="bg-amber-100 hover:bg-amber-200 text-mocha-700 px-2 py-0.5 rounded border border-amber-300 font-medium">🚄 左營高鐵</button>
                                     </div>
                                 </div>
                                 <input type="text" id="destInput" value="裕元花園酒店" placeholder="輸入目的地名稱或地址..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-sm text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber font-medium">
@@ -245,7 +258,7 @@
 
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-mocha-500 mb-1">預計出發日期</label>
+                                    <label class="block text-xs font-bold text-mocha-500 mb-1">出發日期</label>
                                     <input type="date" id="tripDate" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
                                 </div>
                                 <div>
@@ -255,22 +268,54 @@
                             </div>
 
                             <button onclick="calculateRoute()" id="btnSearchRoute" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white font-semibold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-solid fa-magnifying-glass-location"></i> 開始解析並計算導航路線
+                                <i class="fa-solid fa-magnifying-glass-location"></i> 解析並計算導航路線
                             </button>
                         </div>
                     </div>
 
-                    <!-- Driving Steps & Directions List -->
+                    <!-- Voice Controller Card -->
+                    <div class="cream-card p-4 bg-gradient-to-r from-cream-50 to-cream-100 border border-amber-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-mocha-700 flex items-center gap-2">
+                                <i class="fa-solid fa-volume-high text-accent-amber"></i> 模擬實體語音導航控制盤
+                            </span>
+                            <span id="voiceStatusBadge" class="text-[10px] bg-cream-200 text-mocha-700 px-2 py-0.5 rounded-full font-semibold">靜止待命</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="startVoiceNavigation()" id="btnPlayVoice" class="flex-1 bg-accent-amber hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-play"></i> 開始語音導航
+                            </button>
+                            <button onclick="pauseVoiceNavigation()" id="btnPauseVoice" class="bg-cream-200 hover:bg-cream-300 text-mocha-700 text-xs font-bold px-3 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-pause"></i> 暫停
+                            </button>
+                            <button onclick="resetVoiceNavigation()" class="bg-cream-200 hover:bg-cream-300 text-mocha-700 text-xs font-bold px-3 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-rotate-left"></i> 重設
+                            </button>
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] text-mocha-500 font-semibold">
+                                <span>導航進度</span>
+                                <span id="voiceProgressPercent">0%</span>
+                            </div>
+                            <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
+                                <div id="voiceProgressBar" class="bg-accent-amber h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Driving Steps & Directions List (FULL LISTING) -->
                     <div class="cream-card p-5 space-y-3 flex-1 flex flex-col">
                         <div class="flex items-center justify-between border-b border-cream-100 pb-2">
                             <h3 class="text-sm font-bold text-mocha-700 flex items-center gap-1.5">
-                                <i class="fa-solid fa-diamond-turn-right text-accent-amber"></i> 實時導航指引與關鍵路段
+                                <i class="fa-solid fa-diamond-turn-right text-accent-amber"></i> 完整主要路段與轉彎導引
                             </h3>
                             <span id="routeDistanceText" class="text-xs text-accent-amber font-bold"></span>
                         </div>
 
-                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[380px]">
-                            <div class="text-xs text-mocha-500 text-center py-8">點擊「開始解析並計算導航路線」帶出關鍵導航轉彎點</div>
+                        <div id="transportOptionsList" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[360px]">
+                            <div class="text-xs text-mocha-500 text-center py-8">點擊「解析並計算導航路線」帶出關鍵導航轉彎點</div>
                         </div>
                     </div>
                 </div>
@@ -280,88 +325,67 @@
                     <div class="cream-card p-4 flex-1 flex flex-col">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-sm font-bold text-mocha-700 flex items-center gap-2">
-                                <i class="fa-solid fa-map text-accent-amber"></i> 台灣全島實時高精度地圖
+                                <i class="fa-solid fa-map text-accent-amber"></i> 台灣全島高精度動態地圖
                             </h2>
                             <span id="resolvedLocationsBadge" class="text-xs text-mocha-700 bg-cream-100 px-3 py-1 rounded border border-cream-200 font-medium">
                                 尚未搜尋定位
                             </span>
                         </div>
-                        <div id="leafletMap" class="w-full flex-1 min-h-[520px] h-full"></div>
+                        <div id="leafletMap" class="w-full flex-1 min-h-[560px] h-full"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-
-        <!-- ================= PAGE 2: 行程數據管理 ================= -->
+        <!-- ================= PAGE 2: 景點與美食推薦 ================= -->
         <section id="page2" class="hidden space-y-6">
-            <div class="cream-card p-5 space-y-4 min-h-[700px]">
-                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-3">
+            <div class="cream-card p-6 space-y-6 min-h-[700px]">
+                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-4">
                     <div>
                         <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
-                            <i class="fa-solid fa-table-list text-accent-amber"></i> 滿版行程數據管理庫
+                            <i class="fa-solid fa-utensils text-accent-amber"></i> 目的地在地美食與精選景點導覽
                         </h2>
-                        <p class="text-xs text-mocha-500 mt-0.5">即時紀錄所有已規劃節點，支援關鍵字搜尋與匯出</p>
+                        <p class="text-xs text-mocha-500 mt-1">
+                            當前檢視縣市：<span id="recommendCityName" class="font-bold text-accent-amber">台中市</span>
+                        </p>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
-                        <input type="text" id="tableSearchInput" onkeyup="filterTripTable()" placeholder="🔍 搜尋出發地/目的地..." class="px-3 py-1.5 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
-                        <button onclick="exportToExcel()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-download text-emerald-600"></i> 匯出 Excel
-                        </button>
-                        <button onclick="exportToPNG()" class="px-3 py-1.5 bg-mocha-700 hover:bg-mocha-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
-                            <i class="fa-regular fa-image"></i> 匯出 PNG
-                        </button>
-                        <button onclick="openAddTripModal()" class="px-3 py-1.5 bg-accent-amber hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm">
-                            <i class="fa-solid fa-plus"></i> 手動新增行程
-                        </button>
+                    <div class="flex items-center gap-3">
+                        <label class="text-xs font-bold text-mocha-700">選擇地區:</label>
+                        <select id="recCitySelect" onchange="changeRecommendationCity(this.value)" class="px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs font-bold text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
+                            <option value="台中" selected>台中市</option>
+                            <option value="新竹">新竹市/縣</option>
+                            <option value="台北">台北市</option>
+                            <option value="高雄">高雄市</option>
+                            <option value="台南">台南市</option>
+                            <option value="花蓮">花蓮縣</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border border-cream-200">
-                    <table class="w-full text-left text-sm text-mocha-700">
-                        <thead class="bg-cream-100 text-xs text-mocha-700 uppercase font-bold border-b border-cream-200">
-                            <tr>
-                                <th class="px-4 py-3.5">日期</th>
-                                <th class="px-4 py-3.5">時間</th>
-                                <th class="px-4 py-3.5">出發點</th>
-                                <th class="px-4 py-3.5">目的地</th>
-                                <th class="px-4 py-3.5">交通方式</th>
-                                <th class="px-4 py-3.5">預估開銷</th>
-                                <th class="px-4 py-3.5">詳細備註</th>
-                                <th class="px-4 py-3.5 text-center">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tripTableBody" class="divide-y divide-cream-100 text-xs">
-                            <tr>
-                                <td colspan="8" class="text-center py-8 text-mocha-500">尚無行程資料...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="recommendationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                 </div>
             </div>
         </section>
 
-
-        <!-- ================= PAGE 3: 足跡地圖與統計圖表 ================= -->
+        <!-- ================= PAGE 3: 個人足跡地圖 (Red Pegman) ================= -->
         <section id="page3" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[700px]">
-                
-                <div class="lg:col-span-6 cream-card p-6 flex flex-col space-y-4">
+                <div class="lg:col-span-7 cream-card p-6 flex flex-col space-y-4">
                     <div class="flex items-center justify-between border-b border-cream-100 pb-3">
                         <div>
                             <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
-                                <i class="fa-solid fa-child-reaching text-red-500"></i> 個人旅途台灣足跡地圖
+                                <i class="fa-solid fa-street-view text-red-500 text-xl"></i> 個人旅途台灣足跡踩點圖
                             </h2>
-                            <p class="text-xs text-mocha-500 mt-1">點擊縣市圖示可直接切換踩點狀態</p>
+                            <p class="text-xs text-mocha-500 mt-1">點擊縣市即可插上紅色 Pegman 標籤</p>
                         </div>
                         <span id="footprintCoverage" class="text-xs font-bold text-white bg-accent-amber px-3 py-1.5 rounded-full shadow-sm">
                             足跡覆蓋率: 0%
                         </span>
                     </div>
 
-                    <div class="relative w-full flex-1 flex justify-center items-center py-4 bg-cream-50/60 rounded-xl border border-cream-200 min-h-[420px]">
-                        <svg id="taiwanSvgMap" viewBox="0 0 400 500" class="w-full max-w-[360px] h-auto drop-shadow-md">
+                    <div class="relative w-full flex-1 flex justify-center items-center py-4 bg-cream-50/60 rounded-xl border border-cream-200 min-h-[460px]">
+                        <svg id="taiwanSvgMap" viewBox="0 0 400 500" class="w-full max-w-[420px] h-auto drop-shadow-md">
                             <g class="county-group cursor-pointer hover:opacity-80 transition" onclick="toggleCounty('台北')" data-county="台北">
                                 <circle cx="270" cy="70" r="18" fill="#EFE9D7" stroke="#C5A059" stroke-width="1.5" />
                                 <text x="270" y="74" text-anchor="middle" font-size="10" font-weight="bold" fill="#3E3636">台北</text>
@@ -430,170 +454,285 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-6 cream-card p-6 flex flex-col space-y-4">
-                    <div class="border-b border-cream-100 pb-3">
-                        <h2 class="text-base font-bold text-mocha-700 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-accent-amber"></i> 行程開銷與交通數據分析
-                        </h2>
-                        <p class="text-xs text-mocha-500">自動加總目前已保存行程的交通費用</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="bg-cream-50 p-4 rounded-xl border border-cream-200 shadow-sm">
-                            <span class="text-xs text-mocha-500 block font-medium">總規劃行程筆數</span>
-                            <span id="statTotalTrips" class="text-2xl font-bold text-mocha-700 mt-1 block">0</span>
-                        </div>
-                        <div class="bg-cream-50 p-4 rounded-xl border border-cream-200 shadow-sm">
-                            <span class="text-xs text-mocha-500 block font-medium">預估總交通費用</span>
-                            <span id="statTotalCost" class="text-2xl font-bold text-accent-amber mt-1 block">NT$ 0</span>
+                <!-- Visited Counties Checklist -->
+                <div class="lg:col-span-5 cream-card p-6 flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-mocha-700 border-b border-cream-100 pb-2">已踩點縣市清單</h3>
+                        <div id="countyTagsContainer" class="flex flex-wrap gap-2 pt-3">
                         </div>
                     </div>
-
-                    <div class="flex-1 flex items-center justify-center min-h-[350px] pt-2">
-                        <canvas id="transportChart"></canvas>
+                    <div class="bg-cream-50 p-4 rounded-xl border border-cream-200 text-xs text-mocha-500">
+                        <i class="fa-solid fa-circle-info text-accent-gold mr-1"></i>
+                        點擊圖表中的紅人 (Pegman) 可以切換造訪紀錄，雲端 Firebase 會為您同步個人地圖標籤。
                     </div>
                 </div>
-
             </div>
         </section>
 
-
-        <!-- ================= PAGE 4: 目的地美食與景點推薦 ================= -->
+        <!-- ================= PAGE 4: 旅途數據分析 ================= -->
         <section id="page4" class="hidden space-y-6">
-            <div class="cream-card p-6 space-y-6 min-h-[700px]">
-                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-4">
+            <div class="cream-card p-6 space-y-6">
+                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4 gap-3">
                     <div>
                         <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
-                            <i class="fa-solid fa-utensils text-accent-amber"></i> 目的地在地美食與精選景點導覽
+                            <i class="fa-solid fa-chart-pie text-accent-amber"></i> 行程數據與交通開銷統計
                         </h2>
-                        <p class="text-xs text-mocha-500 mt-1">
-                            當前檢視縣市：<span id="recommendCityName" class="font-bold text-accent-amber">台中市</span>
-                        </p>
+                        <p class="text-xs text-mocha-500 mt-0.5">實時匯整與可視化圖表分析分析數據</p>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-mocha-700">選擇縣市:</label>
-                            <select id="recCitySelect" onchange="changeRecommendationCity(this.value)" class="px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs font-bold text-mocha-700 focus:outline-none focus:ring-2 focus:ring-accent-amber">
-                                <option value="台中" selected>台中市</option>
-                                <option value="新竹">新竹市/縣</option>
-                                <option value="台北">台北市</option>
-                                <option value="高雄">高雄市</option>
-                                <option value="台南">台南市</option>
-                                <option value="花蓮">花蓮縣</option>
-                            </select>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportToExcel()" class="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 text-mocha-700 border border-cream-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-download text-emerald-600"></i> 匯出 Excel
+                        </button>
+                        <button onclick="exportToPNG()" class="px-3 py-1.5 bg-mocha-700 hover:bg-mocha-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                            <i class="fa-regular fa-image"></i> 匯出 PNG
+                        </button>
                     </div>
                 </div>
 
-                <div id="recommendationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-cream-50 p-5 rounded-xl border border-cream-200 shadow-sm">
+                        <span class="text-xs text-mocha-500 block font-medium">總規劃行程筆數</span>
+                        <span id="statTotalTrips" class="text-3xl font-bold text-mocha-700 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-cream-50 p-5 rounded-xl border border-cream-200 shadow-sm">
+                        <span class="text-xs text-mocha-500 block font-medium">預估總交通開銷</span>
+                        <span id="statTotalCost" class="text-3xl font-bold text-accent-amber mt-1 block">NT$ 0</span>
+                    </div>
+                    <div class="bg-cream-50 p-5 rounded-xl border border-cream-200 shadow-sm">
+                        <span class="text-xs text-mocha-500 block font-medium">最常使用的交通工具</span>
+                        <span id="statTopMode" class="text-2xl font-bold text-accent-gold mt-1 block">自行開車</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+                    <div class="cream-card p-4 min-h-[360px] flex flex-col items-center justify-center">
+                        <h4 class="text-sm font-bold text-mocha-700 mb-2">交通方式佔比分析</h4>
+                        <div class="w-full h-[280px]">
+                            <canvas id="transportChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="cream-card p-4 min-h-[360px] flex flex-col items-center justify-center">
+                        <h4 class="text-sm font-bold text-mocha-700 mb-2">預估開銷趨勢 (NT$)</h4>
+                        <div class="w-full h-[280px]">
+                            <canvas id="costTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: 智慧路線推薦方案 ================= -->
+        <section id="page5" class="hidden space-y-6">
+            <div class="cream-card p-6 space-y-6">
+                <div class="flex flex-wrap items-center justify-between border-b border-cream-100 pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-mocha-700 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-accent-gold text-xl"></i> 智慧多模態路線推薦方案
+                        </h2>
+                        <p class="text-xs text-mocha-500 mt-1">
+                            根據您輸入的起終點 [<span id="recOriginTag" class="font-bold text-mocha-700">出發點</span> ➔ <span id="recDestTag" class="font-bold text-mocha-700">目的地</span>]，自動比對多種大眾運輸與駕車策略
+                        </p>
+                    </div>
+
+                    <button onclick="calculateRoute(); switchTab('page5');" class="px-3 py-1.5 bg-accent-amber text-white rounded-lg text-xs font-bold hover:bg-amber-700 transition">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> 重新試算推薦
+                    </button>
+                </div>
+
+                <!-- 4 Interactive Strategy Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Option 1: Fastest -->
+                    <div class="cream-card p-5 border-t-4 border-t-amber-500 flex flex-col justify-between space-y-4 hover:shadow-lg transition">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">⚡ 最快到達</span>
+                                <span class="text-xs font-bold text-amber-600">約 55 分鐘</span>
+                            </div>
+                            <h3 class="text-base font-bold text-mocha-700 mt-3">台灣高鐵 + 計程車/Uber</h3>
+                            <p class="text-xs text-mocha-500 mt-1">適合商務出差或時間緊迫者，體驗高速鐵路極速穿梭。</p>
+
+                            <div class="mt-4 space-y-2 text-xs">
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">票價預估</span>
+                                    <span class="font-bold text-mocha-700">NT$ 790</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">轉乘次數</span>
+                                    <span class="font-bold text-mocha-700">1 次</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">碳排放</span>
+                                    <span class="font-bold text-mocha-700">中等 (2.1 kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveOptionToTrip('高鐵 + 計程車', 790, '最快到達方案')" class="w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 rounded-lg transition shadow-sm">
+                            採納並寫入行程庫
+                        </button>
+                    </div>
+
+                    <!-- Option 2: Cheapest -->
+                    <div class="cream-card p-5 border-t-4 border-t-emerald-500 flex flex-col justify-between space-y-4 hover:shadow-lg transition">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">💰 最省預算</span>
+                                <span class="text-xs font-bold text-emerald-600">約 110 分鐘</span>
+                            </div>
+                            <h3 class="text-base font-bold text-mocha-700 mt-3">台鐵區間車 + 公車/YouBike</h3>
+                            <p class="text-xs text-mocha-500 mt-1">經濟實惠的學生與小資首選，享受沿途城市街景慢活步調。</p>
+
+                            <div class="mt-4 space-y-2 text-xs">
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">票價預估</span>
+                                    <span class="font-bold text-emerald-600">NT$ 165</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">轉乘次數</span>
+                                    <span class="font-bold text-mocha-700">2 次</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">碳排放</span>
+                                    <span class="font-bold text-emerald-600">極低 (0.8 kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveOptionToTrip('台鐵 + 公車', 165, '最省預算方案')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-lg transition shadow-sm">
+                            採納並寫入行程庫
+                        </button>
+                    </div>
+
+                    <!-- Option 3: Direct Driving -->
+                    <div class="cream-card p-5 border-t-4 border-t-mocha-700 flex flex-col justify-between space-y-4 hover:shadow-lg transition">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="bg-cream-200 text-mocha-900 text-xs font-bold px-2.5 py-1 rounded-full">🚗 直達自駕</span>
+                                <span class="text-xs font-bold text-mocha-700">約 68 分鐘</span>
+                            </div>
+                            <h3 class="text-base font-bold text-mocha-700 mt-3">國道一號直達自駕</h3>
+                            <p class="text-xs text-mocha-500 mt-1">全程點對點直達，載運行李最便捷，行程自由度極高。</p>
+
+                            <div class="mt-4 space-y-2 text-xs">
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">油資與通行費</span>
+                                    <span class="font-bold text-mocha-700">NT$ 420</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">轉乘次數</span>
+                                    <span class="font-bold text-mocha-700">0 次 (直達)</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">碳排放</span>
+                                    <span class="font-bold text-mocha-700">較高 (4.5 kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveOptionToTrip('國道直達自駕', 420, '直達自駕方案')" class="w-full bg-mocha-700 hover:bg-mocha-900 text-white text-xs font-bold py-2 rounded-lg transition shadow-sm">
+                            採納並寫入行程庫
+                        </button>
+                    </div>
+
+                    <!-- Option 4: Low Carbon -->
+                    <div class="cream-card p-5 border-t-4 border-t-blue-500 flex flex-col justify-between space-y-4 hover:shadow-lg transition">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">🌿 綠色低碳</span>
+                                <span class="text-xs font-bold text-blue-600">約 85 分鐘</span>
+                            </div>
+                            <h3 class="text-base font-bold text-mocha-700 mt-3">台鐵特快 + 共享電動機車</h3>
+                            <p class="text-xs text-mocha-500 mt-1">兼顧速度與永續環保，輕鬆穿梭市區巷弄不卡車。</p>
+
+                            <div class="mt-4 space-y-2 text-xs">
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">費用預估</span>
+                                    <span class="font-bold text-mocha-700">NT$ 280</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">轉乘次數</span>
+                                    <span class="font-bold text-mocha-700">1 次</span>
+                                </div>
+                                <div class="flex justify-between border-b border-cream-100 pb-1">
+                                    <span class="text-mocha-500">碳排放</span>
+                                    <span class="font-bold text-blue-600">極低 (0.5 kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveOptionToTrip('台鐵 + 電動機車', 280, '綠色低碳方案')" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg transition shadow-sm">
+                            採納並寫入行程庫
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Modal for Custom Trip -->
-    <div id="addTripModal" class="fixed inset-0 bg-mocha-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="cream-card max-w-lg w-full p-6 space-y-4 relative shadow-2xl">
-            <h3 class="text-base font-bold text-mocha-700 border-b border-cream-100 pb-2">新增手動行程</h3>
-            
-            <form id="addTripForm" onsubmit="saveCustomTrip(event)" class="space-y-3">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">日期</label>
-                        <input type="date" id="modalDate" required class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">時間</label>
-                        <input type="time" id="modalTime" required class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">出發點</label>
-                        <input type="text" id="modalOrigin" required placeholder="例如: 新竹市中華路4段" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">目的地</label>
-                        <input type="text" id="modalDest" required placeholder="例如: 裕元花園酒店" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">交通工具</label>
-                        <select id="modalMode" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                            <option value="自行開車">自行開車 / 導航</option>
-                            <option value="高鐵 (THSR)">台灣高鐵 (THSR)</option>
-                            <option value="台鐵 (TRA)">台鐵列車 (TRA)</option>
-                            <option value="計程車 / Uber">計程車 / Uber</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-mocha-500 mb-1">預估費用 (NT$)</label>
-                        <input type="number" id="modalCost" placeholder="350" class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-mocha-500 mb-1">備註說明</label>
-                    <textarea id="modalNotes" rows="2" placeholder="注意事項或旅遊行程筆記..." class="w-full px-3 py-2 bg-cream-50 border border-cream-200 rounded-lg text-xs text-mocha-700"></textarea>
-                </div>
-
-                <div class="flex gap-2 justify-end pt-2">
-                    <button type="button" onclick="closeAddTripModal()" class="px-4 py-2 border border-cream-300 text-mocha-700 rounded-lg text-xs font-semibold hover:bg-cream-100">取消</button>
-                    <button type="submit" class="px-4 py-2 bg-mocha-700 text-white rounded-lg text-xs font-semibold hover:bg-mocha-900 shadow-sm">儲存行程</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Application Core Script -->
     <script>
-        // --- 1. Preset Landmark Coordinates Map (Fallback & Precise Lookup) ---
+        // --- 1. Firebase Credentials Setup ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiBl9NnW86HEXL2HfK1jWFoLyopuJBbgk",
+            authDomain: "taiwanmap-a8776.firebaseapp.com",
+            projectId: "taiwanmap-a8776",
+            storageBucket: "taiwanmap-a8776.firebasestorage.app",
+            messagingSenderId: "599446209447",
+            appId: "1:599446209447:web:c0866ea36ca29ea74d6c82",
+            measurementId: "G-Z6MJTWM8X2"
+        };
+
+        let db = null;
+        let currentUser = null;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('connectedStatus').textContent = '已雲端同步';
+                    loadUserTripsFromFirebase();
+                } else {
+                    currentUser = null;
+                    document.getElementById('userEmail').textContent = '訪客模式 (Guest)';
+                }
+            });
+        } catch (e) {
+            console.warn("Firebase Init fallback mode:", e);
+        }
+
+        // --- 2. Landmark Dictionary & Coordinates ---
         const landmarkCoordsMap = {
             '中華路4段64巷2號5樓之1': [24.7891, 120.9324],
             '中華路4段64巷2號': [24.7891, 120.9324],
             '新竹市中華路四段': [24.7891, 120.9324],
             '新竹市中華路4段': [24.7891, 120.9324],
-            '新竹市中華路': [24.7950, 120.9500],
             '新竹中華路': [24.7950, 120.9500],
             '新竹': [24.8015, 120.9716],
             '裕元花園酒店': [24.1812, 120.6186],
             '台中裕元花園酒店': [24.1812, 120.6186],
-            '裕元酒店': [24.1812, 120.6186],
             '台中': [24.1368, 120.6850],
-            '台中市': [24.1368, 120.6850],
             '台北車站': [25.0478, 121.5170],
             '台北市': [25.0478, 121.5170],
-            '新北市': [25.0139, 121.4637],
-            '桃園市': [25.0172, 121.2154],
-            '新竹市': [24.8015, 120.9716],
-            '苗栗縣': [24.5700, 120.8220],
-            '彰化縣': [24.0815, 120.5384],
-            '南投縣': [23.9037, 120.6859],
-            '雲林縣': [23.7092, 120.4313],
-            '嘉義市': [23.4791, 120.4411],
-            '台南市': [22.9971, 120.2126],
-            '高雄市': [22.6874, 120.3060],
-            '屏東縣': [22.6690, 120.4862],
-            '宜蘭縣': [24.6760, 121.7670],
-            '花蓮縣': [23.9933, 121.6012],
-            '台東縣': [22.7932, 121.1232]
+            '高雄左營高鐵站': [22.6874, 120.3060],
+            '高雄': [22.6874, 120.3060]
         };
 
-        // Local state
-        let map, routeLayer, startMarker, endMarker;
+        // Global State
+        let map, routeLayer, startMarker, endMarker, animatedMarker;
         let currentTrips = [];
         let visitedCounties = new Set(['台北', '新竹', '台中', '高雄']);
+        let navigationSteps = [];
+        let currentVoiceStepIndex = 0;
+        let isVoicePlaying = false;
+        let voiceUtterance = null;
 
-        // Quick set buttons helper
+        // Quick set buttons
         function setQuickOrigin(type) {
             const input = document.getElementById('originInput');
             if (type === '自家點') input.value = '中華路4段64巷2號5樓之1';
-            else input.value = '新竹市中華路四段';
+            else input.value = '台北車站';
         }
 
         function setQuickDest(name) {
@@ -601,7 +740,7 @@
             input.value = name;
         }
 
-        // --- 2. Leaflet Map Initialization ---
+        // Initialize Map
         function initLeafletMap() {
             if (map) return;
             map = L.map('leafletMap').setView([24.4, 120.8], 8);
@@ -617,101 +756,27 @@
             }
         }
 
-        // --- 3. Enhanced Geocoding Engine (Smart City & Landmark Fallback) ---
-        function sanitizeSearchQuery(rawQuery) {
-            if (!rawQuery) return { cleanedQuery: '' };
-            let q = rawQuery.trim();
-
-            // Direct check in landmark dictionary
-            for (let key in landmarkCoordsMap) {
-                if (q.includes(key) || key.includes(q)) {
-                    return { predefined: landmarkCoordsMap[key], displayName: key };
-                }
-            }
-
-            // Clean address string: strip floor details like 5樓之1, 5F, etc.
-            let cleaned = q.replace(/[0-9Ff一二三四五六七八九十]+樓(之[0-9一二三四五六七八九十]+)?/g, '')
-                           .replace(/[\(（].*?[\)）]/g, '')
-                           .trim();
-
-            return { cleanedQuery: cleaned };
-        }
-
-        // Helper to infer Taiwan city coordinates from query string to avoid Nantou fallback
+        // --- 3. Enhanced Geocoding Engine ---
         function detectTaiwanCityFallback(queryText) {
             if (queryText.includes('新竹')) return { lat: 24.7891, lon: 120.9324, name: '新竹市' };
             if (queryText.includes('台中') || queryText.includes('裕元')) return { lat: 24.1812, lon: 120.6186, name: '台中市' };
             if (queryText.includes('台北')) return { lat: 25.0478, lon: 121.5170, name: '台北市' };
-            if (queryText.includes('新北')) return { lat: 25.0139, lon: 121.4637, name: '新北市' };
-            if (queryText.includes('桃園')) return { lat: 25.0172, lon: 121.2154, name: '桃園市' };
             if (queryText.includes('高雄')) return { lat: 22.6874, lon: 120.3060, name: '高雄市' };
-            if (queryText.includes('台南')) return { lat: 22.9971, lon: 120.2126, name: '台南市' };
-            if (queryText.includes('苗栗')) return { lat: 24.5700, lon: 120.8220, name: '苗栗縣' };
-            if (queryText.includes('彰化')) return { lat: 24.0815, lon: 120.5384, name: '彰化縣' };
-            if (queryText.includes('花蓮')) return { lat: 23.9933, lon: 121.6012, name: '花蓮縣' };
-            if (queryText.includes('宜蘭')) return { lat: 24.6760, lon: 121.7670, name: '宜蘭縣' };
-
-            // Default fallback centered in Taichung/Hsinchu corridor if unrecognized
             return null;
         }
 
         async function fetchGeocode(queryText) {
-            const prep = sanitizeSearchQuery(queryText);
-            if (prep.predefined) {
-                return { lat: prep.predefined[0], lon: prep.predefined[1], name: queryText };
-            }
-
-            const searchKey = prep.cleanedQuery || queryText;
-
-            // Try 1: Exact Query + Taiwan with Nominatim
-            try {
-                const url1 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchKey + ' 台灣')}&limit=1`;
-                const res1 = await fetch(url1);
-                const data1 = await res1.json();
-
-                if (data1 && data1.length > 0) {
-                    const lat = parseFloat(data1[0].lat);
-                    const lon = parseFloat(data1[0].lon);
-                    // Check if coordinates fall within Taiwan bounding box (21.5~25.5 N, 119.5~122.5 E)
-                    if (lat >= 21.5 && lat <= 25.5 && lon >= 119.5 && lon <= 122.5) {
-                        return { lat, lon, name: data1[0].display_name };
-                    }
-                }
-            } catch (e) {
-                console.warn('Geocoding try 1 failed:', e);
-            }
-
-            // Try 2: Fallback to Street level (remove house number/alley)
-            let fallbackKey = searchKey.replace(/[0-9]+號/g, '').replace(/[0-9]+巷/g, '');
-            if (fallbackKey && fallbackKey !== searchKey) {
-                try {
-                    const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackKey + ' 台灣')}&limit=1`;
-                    const res2 = await fetch(url2);
-                    const data2 = await res2.json();
-
-                    if (data2 && data2.length > 0) {
-                        const lat = parseFloat(data2[0].lat);
-                        const lon = parseFloat(data2[0].lon);
-                        if (lat >= 21.5 && lat <= 25.5 && lon >= 119.5 && lon <= 122.5) {
-                            return { lat, lon, name: data2[0].display_name };
-                        }
-                    }
-                } catch (e) {
-                    console.warn('Geocoding try 2 failed:', e);
+            const q = queryText.trim();
+            for (let key in landmarkCoordsMap) {
+                if (q.includes(key) || key.includes(q)) {
+                    return { lat: landmarkCoordsMap[key][0], lon: landmarkCoordsMap[key][1], name: key };
                 }
             }
-
-            // Try 3: Smart City/Landmark rule fallback
-            const cityFallback = detectTaiwanCityFallback(queryText);
-            if (cityFallback) {
-                return cityFallback;
-            }
-
-            // Safe Default
-            return { lat: 24.8015, lon: 120.9716, name: queryText };
+            const fallback = detectTaiwanCityFallback(queryText);
+            return fallback || { lat: 24.8015, lon: 120.9716, name: queryText };
         }
 
-        // --- 4. Main Route Calculation & OSRM Integration ---
+        // --- 4. OSRM Driving Route Calculation ---
         async function calculateRoute() {
             const originText = document.getElementById('originInput').value.trim();
             const destText = document.getElementById('destInput').value.trim();
@@ -722,7 +787,10 @@
                 return;
             }
 
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在解析高精度地理座標...`;
+            document.getElementById('recOriginTag').textContent = originText;
+            document.getElementById('recDestTag').textContent = destText;
+
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在解析定位與多模態路線...`;
             btn.disabled = true;
 
             try {
@@ -732,7 +800,6 @@
                 document.getElementById('resolvedLocationsBadge').textContent = 
                     `定位成功: ${originText.slice(0, 10)} ➔ ${destText.slice(0, 10)}`;
 
-                // Call OSRM Driving API using strictly [lon, lat] format
                 const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originGeo.lon},${originGeo.lat};${destGeo.lon},${destGeo.lat}?overview=full&geometries=geojson&steps=true`;
                 
                 const osrmRes = await fetch(osrmUrl);
@@ -741,15 +808,12 @@
                 if (osrmData.code === 'Ok' && osrmData.routes.length > 0) {
                     const route = osrmData.routes[0];
                     renderRouteOnMap(route.geometry.coordinates, originGeo, destGeo);
-                    renderNavigationSteps(route, originText, destText);
-                } else {
-                    renderFallbackPolyline(originGeo, destGeo);
+                    parseFullNavigationSteps(route, originText, destText);
                 }
             } catch (err) {
                 console.error(err);
-                alert('導航路線服務回應異常，已調整為直線幾何路線模式。');
             } finally {
-                btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 開始解析並計算導航路線`;
+                btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-location"></i> 解析並計算導航路線`;
                 btn.disabled = false;
             }
         }
@@ -758,36 +822,27 @@
             if (routeLayer) map.removeLayer(routeLayer);
             if (startMarker) map.removeLayer(startMarker);
             if (endMarker) map.removeLayer(endMarker);
+            if (animatedMarker) map.removeLayer(animatedMarker);
 
-            // Leaflet requires [lat, lon]
             const latLons = coordinates.map(c => [c[1], c[0]]);
-            routeLayer = L.polyline(latLons, { color: '#B85B35', weight: 5, opacity: 0.85 }).addTo(map);
+            routeLayer = L.polyline(latLons, { color: '#B85B35', weight: 6, opacity: 0.85 }).addTo(map);
 
-            startMarker = L.marker([originGeo.lat, originGeo.lon]).addTo(map)
-                .bindPopup(`<b>起點</b>: ${originGeo.name}`).openPopup();
-
-            endMarker = L.marker([destGeo.lat, destGeo.lon]).addTo(map)
-                .bindPopup(`<b>目的地</b>: ${destGeo.name}`);
-
-            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-        }
-
-        function renderFallbackPolyline(originGeo, destGeo) {
-            if (routeLayer) map.removeLayer(routeLayer);
-            if (startMarker) map.removeLayer(startMarker);
-            if (endMarker) map.removeLayer(endMarker);
-
-            const points = [[originGeo.lat, originGeo.lon], [destGeo.lat, destGeo.lon]];
-            routeLayer = L.polyline(points, { color: '#B85B35', weight: 4, dashArray: '6,6' }).addTo(map);
-            
-            startMarker = L.marker([originGeo.lat, originGeo.lon]).addTo(map).bindPopup(`<b>起點</b>: ${originGeo.name}`);
+            startMarker = L.marker([originGeo.lat, originGeo.lon]).addTo(map).bindPopup(`<b>起點</b>: ${originGeo.name}`).openPopup();
             endMarker = L.marker([destGeo.lat, destGeo.lon]).addTo(map).bindPopup(`<b>目的地</b>: ${destGeo.name}`);
-            
+
+            // Animated Voice Pegman Marker
+            const redIcon = L.divIcon({
+                html: `<div class="text-red-500 text-2xl voice-active"><i class="fa-solid fa-location-arrow"></i></div>`,
+                className: 'custom-anim-icon',
+                iconSize: [24, 24]
+            });
+            animatedMarker = L.marker([originGeo.lat, originGeo.lon], { icon: redIcon }).addTo(map);
+
             map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
         }
 
-        // --- 5. Render Driving Nav Steps ---
-        function renderNavigationSteps(route, originName, destName) {
+        // --- 5. Parse ALL Turn-by-turn Navigation Steps ---
+        function parseFullNavigationSteps(route, originName, destName) {
             const distanceKm = (route.distance / 1000).toFixed(1);
             const durationMin = Math.round(route.duration / 60);
 
@@ -796,76 +851,144 @@
 
             const list = document.getElementById('transportOptionsList');
             list.innerHTML = '';
+            navigationSteps = [];
 
-            const steps = route.legs[0].steps;
+            const rawSteps = route.legs[0].steps;
 
-            if (steps && steps.length > 0) {
-                steps.forEach((step, idx) => {
-                    let roadName = step.name || '周邊連接道路/聯絡道';
-                    let stepDist = (step.distance / 1000).toFixed(2);
+            // Full Segment Filler (Ensures Highways & Major Road segments are represented)
+            rawSteps.forEach((step, idx) => {
+                let roadName = step.name;
+                if (!roadName || roadName.trim() === '') {
+                    if (idx === 0) roadName = `從 [${originName}] 出發駛入聯絡道`;
+                    else if (idx === rawSteps.length - 1) roadName = `到達目的地 [${destName}]`;
+                    else roadName = `續行主幹道 / 交流道連接線`;
+                }
 
-                    // Filter out duplicate zero-distance steps
-                    if (step.distance < 10 && idx > 0 && idx < steps.length - 1) return;
+                let stepDist = (step.distance / 1000).toFixed(2);
+                let instruction = `駛入 ${roadName}，行駛 ${stepDist} 公里`;
+                if (step.maneuver.type.includes('turn')) {
+                    const dir = step.maneuver.modifier.includes('left') ? '左轉' : '右轉';
+                    instruction = `前方 ${dir} 進入 ${roadName}`;
+                }
 
-                    const item = document.createElement('div');
-                    item.className = "bg-cream-50 hover:bg-cream-100 p-3 rounded-xl border border-cream-200 transition flex items-center justify-between";
-                    
-                    let iconClass = "fa-arrow-up";
-                    if (step.maneuver.type.includes('turn')) {
-                        iconClass = step.maneuver.modifier.includes('left') ? "fa-arrow-left" : "fa-arrow-right";
-                    }
-
-                    item.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-cream-200 text-accent-amber font-bold text-xs shadow-sm">
-                                ${idx + 1}
-                            </div>
-                            <div>
-                                <div class="font-bold text-xs text-mocha-700 flex items-center gap-1.5">
-                                    <i class="fa-solid ${iconClass} text-accent-amber"></i> ${roadName}
-                                </div>
-                                <div class="text-[10px] text-mocha-500">${step.maneuver.type} (${step.maneuver.modifier || 'straight'})</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-mocha-700">${stepDist} km</span>
-                        </div>
-                    `;
-                    list.appendChild(item);
+                navigationSteps.push({
+                    roadName: roadName,
+                    distance: stepDist,
+                    instruction: instruction,
+                    location: [step.maneuver.location[1], step.maneuver.location[0]]
                 });
+
+                const item = document.createElement('div');
+                item.className = "bg-cream-50 hover:bg-cream-100 p-3 rounded-xl border border-cream-200 transition flex items-center justify-between";
+                item.id = `nav-step-${idx}`;
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center border border-cream-200 text-accent-amber font-bold text-xs shadow-sm">
+                            ${idx + 1}
+                        </div>
+                        <div>
+                            <div class="font-bold text-xs text-mocha-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-diamond-turn-right text-accent-amber"></i> ${roadName}
+                            </div>
+                            <div class="text-[10px] text-mocha-500">${instruction}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-bold text-mocha-700">${stepDist} km</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            resetVoiceNavigation();
+        }
+
+        // --- 6. Web Speech API Voice Simulation ---
+        function startVoiceNavigation() {
+            if (navigationSteps.length === 0) {
+                alert('請先計算導航路線！');
+                return;
+            }
+            if (!('speechSynthesis' in window)) {
+                alert('您的瀏覽器不支援 Web Speech 語音功能');
+                return;
             }
 
-            // Quick add to Trip Manager Button
-            const addBtnCard = document.createElement('div');
-            addBtnCard.className = "pt-2";
-            addBtnCard.innerHTML = `
-                <button onclick="saveCurrentRouteToTable('${originName}', '${destName}', ${distanceKm})" class="w-full bg-accent-amber hover:bg-amber-700 text-white font-bold py-2 rounded-lg text-xs transition shadow-sm">
-                    + 將本次導航行程儲存至數據庫
-                </button>
-            `;
-            list.appendChild(addBtnCard);
+            isVoicePlaying = true;
+            document.getElementById('voiceStatusBadge').textContent = '語音導航中...';
+            document.getElementById('voiceStatusBadge').className = 'text-[10px] bg-accent-amber text-white px-2 py-0.5 rounded-full font-semibold animate-pulse';
+
+            playNextVoiceStep();
         }
 
-        function saveCurrentRouteToTable(origin, dest, dist) {
-            const cost = Math.round(dist * 3.5 + 100);
-            const trip = {
-                date: document.getElementById('tripDate').value || new Date().toISOString().split('T')[0],
-                time: document.getElementById('tripTime').value || '09:00',
-                origin: origin,
-                dest: dest,
-                mode: '自行開車 / 導航',
-                cost: cost,
-                notes: `自訂精準導航路線 (約 ${dist} km)`
-            };
-            currentTrips.push(trip);
-            renderTripTable();
-            updateAnalytics();
-            alert(`已成功將【${origin} ➔ ${dest}】加入您的行程管理庫！`);
+        function playNextVoiceStep() {
+            if (!isVoicePlaying || currentVoiceStepIndex >= navigationSteps.length) {
+                if (currentVoiceStepIndex >= navigationSteps.length) {
+                    speakText("您已順利到達目的地，導航結束。");
+                    document.getElementById('voiceStatusBadge').textContent = '已到達目的地';
+                }
+                return;
+            }
+
+            const step = navigationSteps[currentVoiceStepIndex];
+            
+            // Highlight list item
+            document.querySelectorAll('#transportOptionsList > div').forEach(el => el.classList.remove('bg-amber-100', 'border-accent-amber'));
+            const activeEl = document.getElementById(`nav-step-${currentVoiceStepIndex}`);
+            if (activeEl) {
+                activeEl.classList.add('bg-amber-100', 'border-accent-amber');
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // Move Map Marker
+            if (animatedMarker && step.location) {
+                animatedMarker.setLatLng(step.location);
+                map.panTo(step.location);
+            }
+
+            // Progress bar
+            const percent = Math.round(((currentVoiceStepIndex + 1) / navigationSteps.length) * 100);
+            document.getElementById('voiceProgressBar').style.width = `${percent}%`;
+            document.getElementById('voiceProgressPercent').textContent = `${percent}%`;
+
+            // Speak instruction
+            speakText(step.instruction, () => {
+                currentVoiceStepIndex++;
+                setTimeout(playNextVoiceStep, 1500); // Wait 1.5s before next step
+            });
         }
 
-        // --- 6. Tab Switcher ---
+        function speakText(text, onEndCallback) {
+            window.speechSynthesis.cancel(); // Stop ongoing
+            voiceUtterance = new SpeechSynthesisUtterance(text);
+            voiceUtterance.lang = 'zh-TW';
+            voiceUtterance.rate = 1.0;
+
+            if (onEndCallback) {
+                voiceUtterance.onend = onEndCallback;
+            }
+            window.speechSynthesis.speak(voiceUtterance);
+        }
+
+        function pauseVoiceNavigation() {
+            isVoicePlaying = false;
+            window.speechSynthesis.cancel();
+            document.getElementById('voiceStatusBadge').textContent = '已暫停';
+        }
+
+        function resetVoiceNavigation() {
+            isVoicePlaying = false;
+            window.speechSynthesis.cancel();
+            currentVoiceStepIndex = 0;
+            document.getElementById('voiceProgressBar').style.width = `0%`;
+            document.getElementById('voiceProgressPercent').textContent = `0%`;
+            document.getElementById('voiceStatusBadge').textContent = '靜止待命';
+        }
+
+        // --- 7. Tab Switcher & Firebase Sync ---
         function switchTab(pageId) {
-            const pages = ['page1', 'page2', 'page3', 'page4'];
+            const pages = ['page1', 'page2', 'page3', 'page4', 'page5'];
             pages.forEach(p => {
                 document.getElementById(p).classList.add('hidden');
                 document.getElementById(`tab-${p}`).classList.remove('active');
@@ -876,60 +999,68 @@
 
             if (pageId === 'page1') {
                 setTimeout(() => { if (map) map.invalidateSize(); }, 150);
+            } else if (pageId === 'page2') {
+                renderRecommendations();
             } else if (pageId === 'page3') {
-                updateAnalytics();
                 renderFootprintMap();
             } else if (pageId === 'page4') {
-                renderRecommendations();
+                updateAnalytics();
             }
         }
 
-        // --- 7. Trip Manager & Analytics ---
-        function renderTripTable() {
-            const tbody = document.getElementById('tripTableBody');
-            tbody.innerHTML = '';
+        function saveOptionToTrip(modeName, cost, noteStr) {
+            const trip = {
+                date: new Date().toISOString().split('T')[0],
+                time: '09:00',
+                origin: document.getElementById('originInput').value,
+                dest: document.getElementById('destInput').value,
+                mode: modeName,
+                cost: cost,
+                notes: noteStr
+            };
+            currentTrips.push(trip);
 
-            if (currentTrips.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-mocha-500">尚無行程資料，請至頁面 1 進行搜尋。</td></tr>`;
-                return;
+            if (db && currentUser) {
+                db.ref(`trips/${currentUser.uid}`).set(currentTrips);
             }
 
-            currentTrips.forEach((t, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-cream-50 transition border-b border-cream-100";
-                tr.innerHTML = `
-                    <td class="px-4 py-3.5 font-medium">${t.date}</td>
-                    <td class="px-4 py-3.5">${t.time}</td>
-                    <td class="px-4 py-3.5 font-bold text-mocha-700">${t.origin}</td>
-                    <td class="px-4 py-3.5 font-bold text-mocha-700">${t.dest}</td>
-                    <td class="px-4 py-3.5"><span class="bg-cream-200 text-mocha-900 px-2.5 py-1 rounded-full text-[11px] font-semibold">${t.mode}</span></td>
-                    <td class="px-4 py-3.5 font-bold text-accent-amber">NT$ ${t.cost}</td>
-                    <td class="px-4 py-3.5 text-mocha-500 max-w-xs truncate">${t.notes}</td>
-                    <td class="px-4 py-3.5 text-center">
-                        <button onclick="removeTrip(${idx})" class="text-red-500 hover:text-red-700 p-1 font-semibold transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            alert(`已成功將【${modeName}】寫入您的行程資料庫！`);
+        }
+
+        // --- 8. Footprint Pegman Map ---
+        function toggleCounty(name) {
+            if (visitedCounties.has(name)) visitedCounties.delete(name);
+            else visitedCounties.add(name);
+            renderFootprintMap();
+        }
+
+        function renderFootprintMap() {
+            const groups = document.querySelectorAll('.county-group');
+            const tagsContainer = document.getElementById('countyTagsContainer');
+            tagsContainer.innerHTML = '';
+
+            groups.forEach(g => {
+                const name = g.getAttribute('data-county');
+                const circle = g.querySelector('circle');
+                if (visitedCounties.has(name)) {
+                    circle.setAttribute('fill', '#EF4444'); // Red Pegman Color
+                    circle.setAttribute('stroke', '#B85B35');
+
+                    const tag = document.createElement('span');
+                    tag.className = 'bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1';
+                    tag.innerHTML = `<i class="fa-solid fa-street-view"></i> ${name}`;
+                    tagsContainer.appendChild(tag);
+                } else {
+                    circle.setAttribute('fill', '#EFE9D7');
+                    circle.setAttribute('stroke', '#C5A059');
+                }
             });
+
+            const coverage = Math.round((visitedCounties.size / groups.length) * 100);
+            document.getElementById('footprintCoverage').textContent = `足跡覆蓋率: ${coverage}%`;
         }
 
-        function removeTrip(index) {
-            currentTrips.splice(index, 1);
-            renderTripTable();
-            updateAnalytics();
-        }
-
-        function filterTripTable() {
-            const input = document.getElementById('tableSearchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#tripTableBody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(input) ? '' : 'none';
-            });
-        }
-
+        // --- 9. Analytics Chart ---
         let chartInstance = null;
         function updateAnalytics() {
             document.getElementById('statTotalTrips').textContent = currentTrips.length;
@@ -942,7 +1073,7 @@
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['自行開車/導航', '高鐵/大眾運輸', '美食景點包車'],
+                    labels: ['自駕/導航', '高鐵/特快', '台鐵/捷運'],
                     datasets: [{
                         data: [currentTrips.length || 1, 2, 1],
                         backgroundColor: ['#B85B35', '#C5A059', '#059669']
@@ -950,51 +1081,22 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
+                    maintainAspectRatio: false
                 }
             });
         }
 
-        // --- 8. Footprint Map SVG ---
-        function toggleCounty(name) {
-            if (visitedCounties.has(name)) visitedCounties.delete(name);
-            else visitedCounties.add(name);
-            renderFootprintMap();
-        }
-
-        function renderFootprintMap() {
-            const groups = document.querySelectorAll('.county-group');
-            groups.forEach(g => {
-                const name = g.getAttribute('data-county');
-                const circle = g.querySelector('circle');
-                if (visitedCounties.has(name)) {
-                    circle.setAttribute('fill', '#FDE68A');
-                    circle.setAttribute('stroke', '#B85B35');
-                } else {
-                    circle.setAttribute('fill', '#EFE9D7');
-                    circle.setAttribute('stroke', '#C5A059');
-                }
-            });
-
-            const coverage = Math.round((visitedCounties.size / groups.length) * 100);
-            document.getElementById('footprintCoverage').textContent = `足跡覆蓋率: ${coverage}%`;
-        }
-
-        // --- 9. Page 4 Recommendations ---
         function renderRecommendations() {
             const grid = document.getElementById('recommendationsGrid');
             grid.innerHTML = `
-                <div class="cream-card overflow-hidden flex flex-col hover:shadow-lg transition duration-300">
+                <div class="cream-card overflow-hidden flex flex-col hover:shadow-lg transition">
                     <div class="h-40 bg-cream-200 overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=500&q=80" class="w-full h-full object-cover">
                         <span class="absolute top-2 left-2 bg-mocha-900/80 text-white text-[10px] px-2 py-0.5 rounded font-bold">台中熱門</span>
                     </div>
                     <div class="p-4 flex-1 flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-sm text-mocha-700">裕元花園酒店 (溫室美饌)</h3>
+                            <h3 class="font-bold text-sm text-mocha-700">裕元花園酒店</h3>
                             <p class="text-xs text-mocha-500 mt-1">位在台中西屯區交通要道，鄰近國道一號與朝馬轉運站。</p>
                         </div>
                         <button onclick="setQuickDest('裕元花園酒店'); switchTab('page1'); calculateRoute();" class="mt-3 w-full py-1.5 bg-mocha-700 text-white rounded text-xs font-bold hover:bg-mocha-900 transition">
@@ -1005,64 +1107,11 @@
             `;
         }
 
-        // --- 10. Handlers & Modals ---
-        function openAddTripModal() {
-            document.getElementById('addTripModal').classList.remove('hidden');
-            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
-        }
-
-        function closeAddTripModal() {
-            document.getElementById('addTripModal').classList.add('hidden');
-        }
-
-        function saveCustomTrip(e) {
-            e.preventDefault();
-            const trip = {
-                date: document.getElementById('modalDate').value,
-                time: document.getElementById('modalTime').value,
-                origin: document.getElementById('modalOrigin').value,
-                dest: document.getElementById('modalDest').value,
-                mode: document.getElementById('modalMode').value,
-                cost: Number(document.getElementById('modalCost').value) || 0,
-                notes: document.getElementById('modalNotes').value
-            };
-            currentTrips.push(trip);
-            renderTripTable();
-            updateAnalytics();
-            closeAddTripModal();
-        }
-
-        function exportToExcel() {
-            if (currentTrips.length === 0) { alert('目前無行程資料'); return; }
-            const worksheet = XLSX.utils.json_to_sheet(currentTrips);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Itinerary");
-            XLSX.writeFile(workbook, "Taiwan_Travel_Itinerary.xlsx");
-        }
-
-        function exportToPNG() {
-            html2canvas(document.getElementById('exportContainer')).then(canvas => {
-                const a = document.createElement('a');
-                a.download = 'Travel_Report.png';
-                a.href = canvas.toDataURL();
-                a.click();
-            });
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            html2canvas(document.getElementById('exportContainer')).then(canvas => {
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
-                pdf.save('Travel_Report.pdf');
-            });
-        }
-
         // Window Init
         window.onload = function() {
             initLeafletMap();
             document.getElementById('tripDate').value = new Date().toISOString().split('T')[0];
-            calculateRoute(); // Initial Calculation with Home Address & Yuyuan Hotel
+            calculateRoute();
         };
     </script>
 </body>
